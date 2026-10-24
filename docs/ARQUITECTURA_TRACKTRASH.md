@@ -1,6 +1,6 @@
 # Arquitectura de TrackTrash adaptada al curso
 
-Estado: diseño documentado; todavía no hay proyectos C# creados ni servicios externos configurados. Esta revisión utiliza el resumen de la clase, la imagen local `Clearanquitectureimg.jpg` y la preferencia por Supabase.
+Arquitectura objetivo documentada a partir del resumen de la clase, la imagen local `Clearanquitectureimg.jpg` y la preferencia por Supabase. Actualización: ya existe un primer incremento C# en `tracktrash-backend` y Flutter en `tracktrash-mobile`. La configuración remota de Supabase y los módulos adicionales siguen pendientes; consultar el README de cada repositorio para el estado implementado.
 
 ## 1. Interpretación de las referencias
 
@@ -56,7 +56,7 @@ Domain no depende de ninguna otra capa del proyecto. Application no referencia I
 ## 3. Estructura propuesta
 
 ```text
-services/api/
+tracktrash-backend/
   TrackTrash.sln
   src/
     TrackTrash.Domain/
@@ -151,9 +151,9 @@ services/api/
     TrackTrash.Api.IntegrationTests/
 ```
 
-Es una estructura objetivo, no archivos ya creados. Se añadirán componentes cuando su funcionalidad lo necesite. Los nombres de acciones y entidades se mantienen en español, con PascalCase y sufijo UseCase: CrearSolicitudRecojoUseCase, no una mezcla de AddSolicitud y RegistrarPickup.
+Es una estructura objetivo: el incremento inicial implementa el subconjunto de solicitudes, entregas y puntos. Se añadirán componentes cuando su funcionalidad lo necesite. Los nombres de acciones y entidades se mantienen en español, con PascalCase y sufijo UseCase: CrearSolicitudRecojoUseCase, no una mezcla de AddSolicitud y RegistrarPickup.
 
-Flutter conserva su propia organización en `apps/mobile`; no importa ensamblados C#. Se comunica mediante el contrato HTTP de la API.
+Flutter conserva su propia organización en el repositorio `tracktrash-mobile`; no importa ensamblados C#. Se comunica mediante el contrato HTTP de la API.
 
 ## 4. Reglas de ubicación
 

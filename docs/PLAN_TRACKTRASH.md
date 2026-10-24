@@ -1,6 +1,6 @@
 # Plan de desarrollo de TrackTrash
 
-Fecha de investigación: 23 de octubre de 2026. Estado: propuesta para revisión; todavía no se ha implementado la aplicación ni instalado nuevas skills o plugins.
+Fecha de investigación: 23 de octubre de 2026. Plan del producto completo. Actualización: el primer incremento de recojos ya se implementó en repositorios separados; ver [estado de desarrollo](ESTADO_DESARROLLO.md). Los módulos futuros de este documento siguen siendo propuesta.
 
 ## 1. Recomendación
 
@@ -253,7 +253,7 @@ Estimación inicial, no compromiso de fecha: 6–10 semanas de trabajo sostenido
 
 Los rangos se solapan cuando el equipo divide trabajo; no son una promesa de terminar todos los requisitos dentro del MVP.
 
-Estructura de repositorio sugerida: `apps/mobile`, `apps/admin`, `services/api`, `firmware`, `infra`, `docs`. Contrato API compartido y decisiones documentadas. Distribuir trabajo según las responsabilidades del equipo, con responsable explícito del backend y de revisión/integración.
+Distribución adoptada: repositorios independientes `tracktrash-mobile` y `tracktrash-backend`. El segundo contiene `src`, `tests`, scripts de infraestructura local y documentación/contrato API. Panel y firmware se incorporarán en incrementos posteriores, definiendo su repositorio cuando comience su implementación. Distribuir trabajo según las responsabilidades del equipo, con responsable explícito del backend y de revisión/integración.
 
 Primer incremento técnico: app Android conectada a API y BD, login y solicitud con persistencia real, ejecutándose de extremo a extremo. Esto valida la base antes de multiplicar pantallas.
 
