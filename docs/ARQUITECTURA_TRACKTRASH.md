@@ -1,6 +1,6 @@
 # Arquitectura de TrackTrash adaptada al curso
 
-Arquitectura objetivo documentada a partir del resumen de la clase, la imagen local `Clearanquitectureimg.jpg` y la preferencia por Supabase. Actualización: ya existe un primer incremento C# en `tracktrash-backend` y Flutter en `tracktrash-mobile`. La configuración remota de Supabase y los módulos adicionales siguen pendientes; consultar el README de cada repositorio para el estado implementado.
+Arquitectura objetivo documentada a partir del resumen de la clase, la imagen local `Clearanquitectureimg.jpg` y la preferencia por Supabase. Se conserva como antecedente: la estructura realmente disponible del incremento 0.2 está en [ARQUITECTURA_IMPLEMENTADA.md](ARQUITECTURA_IMPLEMENTADA.md), y el estado de cada requisito en [MATRIZ_COBERTURA.md](MATRIZ_COBERTURA.md).
 
 ## 1. Interpretación de las referencias
 

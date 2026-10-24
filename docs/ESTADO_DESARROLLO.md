@@ -1,18 +1,35 @@
-# Repositorios y estado de TrackTrash
+# Estado de TrackTrash · 24/10/2026 · incremento 0.2
 
-El desarrollo se separó en dos repositorios Git independientes dentro de esta carpeta de trabajo:
+Repositorios privados separados bajo CarlosFloresDev:
 
-- [tracktrash-backend](https://github.com/CarlosFloresDev/tracktrash-backend): C# / ASP.NET Core 10, Domain, Application, Infrastructure y Api; PostgreSQL, migraciones y pruebas.
-- [tracktrash-mobile](https://github.com/CarlosFloresDev/tracktrash-mobile): Flutter, navegación, interfaz, integración HTTP y pruebas.
+- [Backend](https://github.com/CarlosFloresDev/tracktrash-backend), C# / ASP.NET Core 10: Domain, Application, Infrastructure y Api.
+- [Mobile](https://github.com/CarlosFloresDev/tracktrash-mobile), Flutter para Android/iOS/web con navegación adaptable.
 
-Ambos son privados, bajo CarlosFloresDev. Los documentos originales de clase permanecen en la carpeta general; no se publicaron los archivos DOCX/PDF. La documentación técnica de backend y el contrato de API se versionan en su repositorio. Cada repositorio incluye su propio README de ejecución y CI.
+El primer incremento está integrado en main (PR #1 de cada repo). Ampliación actual en `feat/ecosistema-tracktrash`, con múltiples commits por requisitos, dominio, módulos, pruebas, diseño, autenticación, iconos, correcciones y documentación. PRs para revisión: [backend #2](https://github.com/CarlosFloresDev/tracktrash-backend/pull/2) y [mobile #2](https://github.com/CarlosFloresDev/tracktrash-mobile/pull/2).
 
-La rama de trabajo inicial es `feat/primer-flujo-recojos`, con commits separados por base, implementación y validación/documentación. `main` contiene la base inicial hasta integrar el pull request.
+## Alcance actual
 
-Primer incremento: crear solicitud de recojo como vecino, aceptar como reciclador, confirmar con código y acreditar puntos una sola vez. Usa PostgreSQL local real y perfiles de prueba identificados como demostración. Supabase remoto, usuarios reales, mapa, IoT, fotos y push requieren los siguientes incrementos.
+20 entidades persistidas y 40 casos de uso concretos. Perfil, aliados/materiales/capacidad, asignación espacial, ciclo de recojo con historial/cancelación/reprogramación, mapa PostGIS, contenedores/reportes ciudadanos, ingesta IoT autenticada, incidencias, horarios y suscripciones, avisos internos, puntos/topes/rachas, catálogo/canjes y panel operativo. Auditoría transaccional y control de concurrencia/idempotencia.
 
-Validación local: 15 pruebas C# aprobadas (incluye PostgreSQL y lectura de JWKS), 10 pruebas Flutter aprobadas, análisis Flutter sin incidencias y backend Release sin advertencias. Compilaciones web y APK debug generadas; pendiente prueba del APK en dispositivo físico e iOS. Cada repositorio tiene CI independiente.
+Flutter: ilustración original Tacho Vivo, iconos, animaciones con movimiento reducido, cinco áreas de navegación, estados de carga/error/vacío, mapa/lista y caché pública opcional. SDK Supabase integrado para acceso y renovación; almacenamiento seguro de sesión y perfiles demo en memoria.
 
-Pull requests del incremento: [backend #1](https://github.com/CarlosFloresDev/tracktrash-backend/pull/1) y [mobile #1](https://github.com/CarlosFloresDev/tracktrash-mobile/pull/1). Permanecen abiertos para revisión.
+## Evidencia
 
-Skills incorporadas para este desarrollo: aspnet-core, flutter-apply-architecture-best-practices y flutter-add-widget-test. Estarán disponibles para descubrimiento automático en el siguiente turno; en este desarrollo se leyeron sus instrucciones locales.
+- Backend: 36 pruebas aprobadas contra PostgreSQL/PostGIS, compilación Release e imagen Docker sin root construida.
+- Flutter: 19 pruebas aprobadas y análisis sin incidencias; builds web y APK debug. QA de navegador con flujo real y capturas en mobile/docs/screenshots; instrucciones en su README.
+- Cada repositorio ejecuta GitHub Actions. Consultar los checks del PR para el último commit, sin confundir validación local con producción.
+- APK local: mobile/build/app/outputs/flutter-apk/app-debug.apk, para Android Emulator (`10.0.2.2:5080`). No se versiona. Recompilar con IP LAN para teléfono físico.
+
+## Lo que falta
+
+La [matriz de los 40 RF y 26 RNF](MATRIZ_COBERTURA.md) detalla cada estado; [arquitectura real](ARQUITECTURA_IMPLEMENTADA.md). Los documentos originales y los planes iniciales se conservan como antecedente, no como prueba de implementación.
+
+Pendientes principales: proyecto Supabase remoto (Auth/correo/JWKS y permisos de BD), recuperación completa de contraseña, Storage/fotos, push/outbox, depósitos validados, detalle multimaterial, instituciones/municipalidades, camiones/GPS/ETA y priorización, retención de lecturas, respaldos restaurados, carga, pruebas físicas y revisión de privacidad. No hay garantía de cero fallos ni cumplimiento total sin esas validaciones.
+
+Los datos precargados de aliados, horarios, ubicaciones y beneficios son sintéticos e identificados como demostración. El simulador HTTP no es firmware ESP32 y no demuestra autonomía o resistencia ambiental. iOS no se compiló en Windows; APK aún requiere instalación y prueba en dispositivo.
+
+## Retomar
+
+Leer ambos README/AGENTS.md, consultar git status y continuar en las ramas actuales. Backend: Docker Desktop, `docker compose up -d --wait`, `dotnet run --project src/TrackTrash.Api`. App: `flutter run -d edge --web-port=5300 --dart-define=DEMO_MODE=true --dart-define=API_BASE_URL=http://localhost:5080`.
+
+Skills aplicadas: aspnet-core, flutter-apply-architecture-best-practices, flutter-add-widget-test e imagegen. No se conectaron cuentas externas ni se publicaron los DOCX/PDF originales. Las instrucciones de continuación están en docs/CONTINUAR.md de la carpeta general.

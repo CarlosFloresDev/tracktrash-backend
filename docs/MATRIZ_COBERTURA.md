@@ -71,7 +71,7 @@ Fuente: RF-01–40 y RNF-01–26 del informe original, más la estructura del cu
 | RNF-18 | Implementado | ASP.NET Core/EF Core 10, PostgreSQL 17/PostGIS 3.5, repositorios LINQ y UnitOfWork. |
 | RNF-19 | Implementado | Columnas calculadas geography(Point,4326), índices GiST y búsquedas espaciales reales. |
 | RNF-20 | Parcial | Compose de BD, Dockerfile API sin root y migraciones versionadas; imagen construida localmente. Falta despliegue público configurado. |
-| RNF-21 | Parcial | 36 pruebas backend y 16 Flutter; puntos, concurrencia, permisos, recordatorios, sensores y canjes. No hay pruebas de depósitos inexistentes. |
+| RNF-21 | Parcial | 36 pruebas backend y 19 Flutter; puntos, concurrencia, permisos, recordatorios, sensores y canjes. No hay pruebas de depósitos inexistentes. |
 | RNF-22 | Pendiente | Lecturas persistidas sin particionado/purga; definir retención antes de crecimiento de piloto. |
 | RNF-23 | Parcial | Modelo de distritos y consultas por datos; altas sin UI completa. Instituciones aún no modeladas. |
 | RNF-24 | Pendiente físico | Autonomía de batería no medida. |
