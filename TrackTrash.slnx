@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TrackTrash.Api/TrackTrash.Api.csproj" />
+    <Project Path="src/TrackTrash.Application/TrackTrash.Application.csproj" />
+    <Project Path="src/TrackTrash.Domain/TrackTrash.Domain.csproj" />
+    <Project Path="src/TrackTrash.Infrastructure/TrackTrash.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TrackTrash.Tests/TrackTrash.Tests.csproj" />
+  </Folder>
+</Solution>
