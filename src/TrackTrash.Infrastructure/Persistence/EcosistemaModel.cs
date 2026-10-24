@@ -15,6 +15,9 @@ public static class EcosistemaModel
         m.Entity<PerfilUsuario>().HasOne<AsociacionReciclaje>().WithMany().HasForeignKey(x=>x.AsociacionId).OnDelete(DeleteBehavior.Restrict);
         m.Entity<AsociacionReciclaje>().ToTable("asociaciones").HasKey(x=>x.Id);
         m.Entity<AsociacionReciclaje>().Property(x=>x.CapacidadKg).HasPrecision(12,2);
+        m.Entity<AsociacionReciclaje>().Property(x=>x.ReservadoKg).HasPrecision(12,2);
+        m.Entity<AsociacionReciclaje>().Property(x=>x.Version).IsConcurrencyToken();
+        m.Entity<SolicitudRecojo>().HasOne<AsociacionReciclaje>().WithMany().HasForeignKey(x=>x.AsociacionId).OnDelete(DeleteBehavior.Restrict);
         m.Entity<AsociacionReciclaje>().HasOne<Distrito>().WithMany().HasForeignKey(x=>x.DistritoId);
         m.Entity<AsociacionReciclaje>().HasMany(x=>x.Materiales).WithOne().HasForeignKey(x=>x.AsociacionId);
         m.Entity<MaterialAceptado>().ToTable("materiales_aceptados").HasKey(x=>new{x.AsociacionId,x.Material});

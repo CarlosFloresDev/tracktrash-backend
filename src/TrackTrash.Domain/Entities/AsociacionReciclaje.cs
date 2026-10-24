@@ -13,6 +13,8 @@ public sealed class AsociacionReciclaje
     public double Latitud { get; private set; }
     public double Longitud { get; private set; }
     public decimal CapacidadKg { get; private set; }
+    public decimal ReservadoKg { get; private set; }
+    public int Version { get; private set; }
     public bool Verificada { get; private set; }
     public bool Demostracion { get; private set; }
     public List<MaterialAceptado> Materiales { get; private set; } = [];
@@ -30,5 +32,11 @@ public sealed class AsociacionReciclaje
         return a;
     }
     public void Verificar() => Verificada = true;
+    public void Reservar(decimal kg,MaterialReciclable material)
+    {
+        if(!Verificada||!Materiales.Any(m=>m.Material==material)||kg>CapacidadKg-ReservadoKg)throw new ReglaNegocioException("La asociación no tiene capacidad o no recibe ese material.");
+        ReservadoKg+=kg;Version++;
+    }
+    public void Liberar(decimal kg){ReservadoKg=Math.Max(0,ReservadoKg-kg);Version++;}
 }
 

@@ -38,7 +38,9 @@ if (app.Environment.IsDevelopment()) app.MapOpenApi();
 if (args.Contains("--migrate"))
 {
     using var scope = app.Services.CreateScope();
-    await scope.ServiceProvider.GetRequiredService<TrackTrashDbContext>().Database.MigrateAsync();
+    var db=scope.ServiceProvider.GetRequiredService<TrackTrashDbContext>();
+    await db.Database.MigrateAsync();
+    if(app.Environment.IsDevelopment()&&builder.Configuration.GetValue<bool>("Authentication:Demo"))await DemoSeed.InicializarAsync(db);
     return;
 }
 app.Run();

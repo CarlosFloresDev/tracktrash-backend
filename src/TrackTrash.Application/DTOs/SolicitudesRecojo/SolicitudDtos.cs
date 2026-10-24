@@ -8,7 +8,7 @@ public sealed record CrearSolicitudRequest(
     [EnumDataType(typeof(MaterialReciclable))] MaterialReciclable Material,
     [Range(typeof(decimal), "0.01", "500")] decimal CantidadEstimadaKg,
     [Required, StringLength(250, MinimumLength = 8)] string Direccion,
-    DateTimeOffset ProgramadaPara);
+    DateTimeOffset ProgramadaPara,double? Latitud=null,double? Longitud=null);
 
 public sealed record ConfirmarEntregaRequest([Required, RegularExpression("^[0-9]{6}$")] string Codigo);
 
@@ -23,3 +23,5 @@ public sealed record SolicitudDto(Guid Id, string Material, decimal CantidadEsti
 }
 
 public sealed record ImpactoDto(int Puntos);
+public sealed record CancelarSolicitudRequest(string Motivo);
+public sealed record ReprogramarSolicitudRequest(DateTimeOffset ProgramadaPara);

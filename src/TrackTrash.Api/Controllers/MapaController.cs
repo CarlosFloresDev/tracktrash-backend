@@ -16,7 +16,7 @@ public sealed class MapaController:ControllerBase
     [HttpGet("asociaciones/candidatos")]
     public async Task<IActionResult> Candidatos(MaterialReciclable material,decimal kg,double lat,double lng,[FromServices] BuscarCandidatosUseCase caso,CancellationToken ct)=>Ok(await caso.ExecuteAsync(material,kg,lat,lng,ct));
     [HttpGet("distritos")]
-    public async Task<IActionResult> Distritos([FromServices] ICatalogoRepository repo,CancellationToken ct)=>Ok((await repo.DistritosAsync(ct)).Select(d=>new DistritoDto(d.Id,d.Nombre)));
+    public async Task<IActionResult> Distritos([FromServices] ListarDistritosUseCase caso,CancellationToken ct)=>Ok(await caso.ExecuteAsync(ct));
     [HttpPost("asociaciones"),Authorize(Roles="admin")]
     public async Task<IActionResult> Crear(CrearAsociacionRequest r,[FromServices] CrearAsociacionUseCase caso,CancellationToken ct)=>Ok(await caso.ExecuteAsync(r,ct));
     [HttpPost("asociaciones/{id:guid}/verificacion"),Authorize(Roles="admin")]
