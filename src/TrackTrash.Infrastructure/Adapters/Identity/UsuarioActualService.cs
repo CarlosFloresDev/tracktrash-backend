@@ -10,4 +10,5 @@ public sealed class UsuarioActualService(IHttpContextAccessor context) : IUsuari
     private ClaimsPrincipal Usuario => context.HttpContext?.User ?? throw new AccesoDenegadoException();
     public Guid Id => Guid.TryParse(Usuario.FindFirstValue("sub"), out var id) ? id : throw new AccesoDenegadoException();
     public bool EsReciclador => Usuario.IsInRole("reciclador");
+    public bool EsAdministrador => Usuario.IsInRole("admin");
 }

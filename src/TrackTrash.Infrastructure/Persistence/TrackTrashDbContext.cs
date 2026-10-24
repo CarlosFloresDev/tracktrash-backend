@@ -7,10 +7,23 @@ public sealed class TrackTrashDbContext(DbContextOptions<TrackTrashDbContext> op
 {
     public DbSet<SolicitudRecojo> Solicitudes => Set<SolicitudRecojo>();
     public DbSet<MovimientoPuntos> MovimientosPuntos => Set<MovimientoPuntos>();
+    public DbSet<PerfilUsuario> Perfiles => Set<PerfilUsuario>();
+    public DbSet<Distrito> Distritos => Set<Distrito>();
+    public DbSet<AsociacionReciclaje> Asociaciones => Set<AsociacionReciclaje>();
+    public DbSet<PuntoAcopio> PuntosAcopio => Set<PuntoAcopio>();
+    public DbSet<Contenedor> Contenedores => Set<Contenedor>();
+    public DbSet<DispositivoIoT> Dispositivos => Set<DispositivoIoT>();
+    public DbSet<LecturaNivel> Lecturas => Set<LecturaNivel>();
+    public DbSet<Incidencia> Incidencias => Set<Incidencia>();
+    public DbSet<Notificacion> Notificaciones => Set<Notificacion>();
+    public DbSet<Beneficio> Beneficios => Set<Beneficio>();
+    public DbSet<Canje> Canjes => Set<Canje>();
+    public DbSet<HistoricoSolicitud> Historial => Set<HistoricoSolicitud>();
 
     protected override void OnModelCreating(ModelBuilder model)
     {
         model.HasDefaultSchema("tracktrash");
+        model.ConfigurarEcosistema();
         var s = model.Entity<SolicitudRecojo>();
         s.ToTable("solicitudes_recojo");
         s.HasKey(x => x.Id);
@@ -28,6 +41,8 @@ public sealed class TrackTrashDbContext(DbContextOptions<TrackTrashDbContext> op
         p.HasKey(x => x.Id);
         p.HasIndex(x => x.SolicitudId).IsUnique();
         p.HasIndex(x => x.UsuarioId);
+        p.HasIndex(x => x.CanjeId).IsUnique();
+        p.HasOne<Canje>().WithMany().HasForeignKey(x => x.CanjeId).OnDelete(DeleteBehavior.Restrict);
         p.HasOne<SolicitudRecojo>().WithMany().HasForeignKey(x => x.SolicitudId).OnDelete(DeleteBehavior.Restrict);
     }
 }

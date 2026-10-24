@@ -5,9 +5,12 @@ public sealed class MovimientoPuntos
     private MovimientoPuntos() { }
     public Guid Id { get; private set; }
     public Guid UsuarioId { get; private set; }
-    public Guid SolicitudId { get; private set; }
+    public Guid? SolicitudId { get; private set; }
+    public Guid? CanjeId { get; private set; }
     public int Puntos { get; private set; }
     public DateTimeOffset CreadoEn { get; private set; }
+    public static MovimientoPuntos PorCanje(Canje canje) => new()
+    {Id=Guid.NewGuid(),UsuarioId=canje.UsuarioId,CanjeId=canje.Id,Puntos=-canje.PuntosUsados,CreadoEn=canje.CreadoEn};
 
     // Recompensa inicial por entrega confirmada; no acredita peso verificado.
     public static MovimientoPuntos PorEntrega(SolicitudRecojo solicitud, DateTimeOffset ahora)
