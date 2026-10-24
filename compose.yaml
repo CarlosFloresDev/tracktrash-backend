@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_DB: tracktrash
+      POSTGRES_USER: tracktrash
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Ejecuta scripts/dev-setup.ps1 primero}
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - tracktrash_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tracktrash -d tracktrash"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  tracktrash_pg:
