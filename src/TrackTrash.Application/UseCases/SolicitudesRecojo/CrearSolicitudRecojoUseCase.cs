@@ -8,7 +8,7 @@ using TrackTrash.Domain.Ports.Repositories;
 namespace TrackTrash.Application.UseCases.SolicitudesRecojo;
 
 public sealed class CrearSolicitudRecojoUseCase(ISolicitudRecojoRepository solicitudes,
-    IUnitOfWork uow, IUsuarioActualService usuario, ICodigoEntregaService codigos, TimeProvider reloj,IHistoricoRepository historial)
+    IUnitOfWork uow, IUsuarioActualService usuario, ICodigoEntregaService codigos, TimeProvider reloj,IHistoricoRepository historial,ICatalogoRepository catalogo)
 {
     public async Task<SolicitudDto> ExecuteAsync(CrearSolicitudRequest request, CancellationToken ct)
     {
@@ -27,6 +27,14 @@ public sealed class CrearSolicitudRecojoUseCase(ISolicitudRecojoRepository solic
             request.CantidadEstimadaKg, request.Direccion, request.ProgramadaPara, reloj.GetUtcNow(), codigos.Generar(),request.Latitud,request.Longitud);
         solicitudes.Agregar(solicitud);
         historial.Agregar(Domain.Entities.HistoricoSolicitud.Crear(solicitud.Id,usuario.Id,"Solicitud creada",reloj.GetUtcNow()));
+        if(request.AutoAsignar)
+        {
+            if(!solicitud.Latitud.HasValue)throw new Domain.Exceptions.ReglaNegocioException("La asignación requiere ubicación del recojo.");
+            var a=(await catalogo.AsociacionesAsync(ct)).Where(a=>a.Verificada&&a.CapacidadKg-a.ReservadoKg>=solicitud.CantidadEstimadaKg&&a.Materiales.Any(m=>m.Material==solicitud.Material))
+                .Select(a=>new{Asociacion=a,Distancia=Ubicacion.DistanciaKm(solicitud.Latitud.Value,solicitud.Longitud!.Value,a.Latitud,a.Longitud)}).Where(a=>a.Distancia<=20).OrderBy(a=>a.Distancia).FirstOrDefault();
+            if(a is null)throw new Domain.Exceptions.ReglaNegocioException("No hay un aliado elegible a menos de 20 km para estos materiales.");
+            solicitud.Asignar(a.Asociacion.Id);historial.Agregar(HistoricoSolicitud.Crear(solicitud.Id,usuario.Id,"Asignada a "+a.Asociacion.Nombre,reloj.GetUtcNow()));
+        }
         await uow.GuardarCambiosAsync(ct);
         return SolicitudDto.Desde(solicitud, usuario.Id);
     }
