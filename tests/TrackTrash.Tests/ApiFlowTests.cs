@@ -150,7 +150,7 @@ public sealed partial class ApiFlowTests : IAsyncLifetime
     public async Task Dos_contextos_no_pueden_aceptar_la_misma_solicitud()
     {
         using var vecino = Client("demo-vecino"); var s = await Crear(vecino);
-        var options = new DbContextOptionsBuilder<TrackTrashDbContext>().UseNpgsql(_connection,o=>o.UseNetTopologySuite()).Options;
+        var options = new DbContextOptionsBuilder<TrackTrashDbContext>().UseNpgsql(_connection, o => o.UseNetTopologySuite()).Options;
         await using var a = new TrackTrashDbContext(options); await using var b = new TrackTrashDbContext(options);
         var primero = await a.Solicitudes.SingleAsync(); var segundo = await b.Solicitudes.SingleAsync();
         primero.Aceptar(Guid.NewGuid()); segundo.Aceptar(Guid.NewGuid());
@@ -164,7 +164,7 @@ public sealed partial class ApiFlowTests : IAsyncLifetime
         using var vecino = Client("demo-vecino"); using var r = Client("demo-reciclador");
         var dto = await Crear(vecino);
         (await r.PostAsync($"/api/v1/solicitudes/{dto.Id}/aceptacion", null)).EnsureSuccessStatusCode();
-        var options = new DbContextOptionsBuilder<TrackTrashDbContext>().UseNpgsql(_connection,o=>o.UseNetTopologySuite()).Options;
+        var options = new DbContextOptionsBuilder<TrackTrashDbContext>().UseNpgsql(_connection, o => o.UseNetTopologySuite()).Options;
         await using (var db = new TrackTrashDbContext(options))
         {
             var s = await db.Solicitudes.SingleAsync();
