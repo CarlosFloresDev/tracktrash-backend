@@ -1,6 +1,6 @@
 # TrackTrash Backend
 
-API ASP.NET Core 10 para reciclaje y atención ciudadana en Arequipa. [Cliente Flutter independiente](https://github.com/CarlosFloresDev/tracktrash-mobile). Incremento 0.2: **23 entidades de dominio y 40 casos de uso**, con reglas y persistencia real. El conteo describe el alcance, no certifica calidad ni cumplimiento total.
+API ASP.NET Core 10 para reciclaje y atención ciudadana en Arequipa. [Cliente Flutter independiente](https://github.com/CarlosFloresDev/tracktrash-mobile). Incremento 0.2: **20 entidades persistidas y 40 casos de uso**, con reglas y persistencia real. El conteo describe el alcance, no certifica calidad ni cumplimiento total.
 
 ## Funciones disponibles
 

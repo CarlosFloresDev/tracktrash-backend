@@ -1,6 +1,6 @@
 # Estado · incremento 0.2 · 24/10/2026
 
-23 entidades, 40 casos de uso y cliente Flutter conectado. Mapa espacial, aliados, ciclo de recojo, capacidad, sensores HTTP, incidencias, horarios/suscripciones, avisos internos, puntos/rachas/canjes, perfil y panel operativo.
+20 entidades persistidas, 40 casos de uso y cliente Flutter conectado. Mapa espacial, aliados, ciclo de recojo, capacidad, sensores HTTP, incidencias, horarios/suscripciones, avisos internos, puntos/rachas/canjes, perfil y panel operativo.
 
 Verificación local: 36 pruebas backend aprobadas, compilación Release e imagen Docker completadas. Cliente: 16 pruebas, análisis sin incidencias, builds web/APK debug. Esto no equivale a validar todos los requisitos originales.
 
