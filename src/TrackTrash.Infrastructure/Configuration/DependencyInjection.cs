@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using TrackTrash.Application.Ports.Services;
 using TrackTrash.Application.UseCases.Entregas;
 using TrackTrash.Application.UseCases.Recompensas;
@@ -54,7 +56,10 @@ public static class DependencyInjection
                 throw new InvalidOperationException("Configura Authentication:Authority con la URL HTTPS de Supabase Auth.");
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
             {
-                o.Authority = authority;
+                o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                    authority.TrimEnd('/') + "/.well-known/jwks.json",
+                    new SupabaseSigningKeyRetriever(authority), new HttpDocumentRetriever { RequireHttps = true });
+                o.TokenValidationParameters.ValidIssuer = authority;
                 o.Audience = "authenticated";
                 o.MapInboundClaims = false;
                 o.TokenValidationParameters.NameClaimType = "sub";
