@@ -14,6 +14,16 @@ public sealed class PerfilUsuario
     public Guid? AsociacionId { get; private set; }
     public bool RecibirAvisos { get; private set; } = true;
     public int Version { get; private set; }
+    public DateOnly? UltimoDiaEntrega { get; private set; }
+    public int RachaActual { get; private set; }
+    public int RachaMaxima { get; private set; }
+    public void RegistrarEntrega(DateTimeOffset ahora)
+    {
+        var dia = DateOnly.FromDateTime(ahora.ToOffset(TimeSpan.FromHours(-5)).DateTime);
+        if (UltimoDiaEntrega != dia) { RachaActual = UltimoDiaEntrega == dia.AddDays(-1) ? RachaActual + 1 : 1; RachaMaxima = Math.Max(RachaMaxima, RachaActual); UltimoDiaEntrega = dia; }
+        Version++;
+    }
+    public int RachaVigente(DateTimeOffset ahora) => UltimoDiaEntrega >= DateOnly.FromDateTime(ahora.ToOffset(TimeSpan.FromHours(-5)).DateTime).AddDays(-1) ? RachaActual : 0;
     public static PerfilUsuario Crear(Guid id) => new() { Id = id };
     public void Actualizar(string nombre, string telefono, string direccion, double? lat, double? lng, bool avisos)
     {

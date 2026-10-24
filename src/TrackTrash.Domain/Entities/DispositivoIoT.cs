@@ -15,8 +15,8 @@ public sealed class DispositivoIoT
     public static DispositivoIoT Crear(Guid contenedor, string hash, double altura)
     {
         if (!double.IsFinite(altura) || altura is < 20 or > 500) throw new ReglaNegocioException("Altura permitida: 20 a 500 cm.");
-        return new() {Id=Guid.NewGuid(),ContenedorId=contenedor,ClaveHash=hash,AlturaCm=altura};
+        return new() { Id = Guid.NewGuid(), ContenedorId = contenedor, ClaveHash = hash, AlturaCm = altura };
     }
-    public void Contactar(DateTimeOffset ahora, int bateria) { UltimoContacto=ahora; Bateria=bateria; Version++; }
+    public void Contactar(DateTimeOffset ahora, int bateria) { UltimoContacto = ahora; Bateria = bateria; Version++; }
 }
 

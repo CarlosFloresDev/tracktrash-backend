@@ -21,22 +21,31 @@ public sealed class AsociacionReciclaje
     public static AsociacionReciclaje Crear(Guid id, Guid distrito, string nombre, string direccion, double lat, double lng,
         decimal capacidad, IEnumerable<MaterialReciclable> materiales, bool demo = false)
     {
-        Ubicacion.Validar(lat,lng);
+        Ubicacion.Validar(lat, lng);
         if (capacidad <= 0 || capacidad > 100000) throw new ReglaNegocioException("La capacidad no es válida.");
         var items = materiales.Distinct().ToArray();
         if (items.Length == 0 || items.Any(m => !Enum.IsDefined(m))) throw new ReglaNegocioException("Selecciona materiales válidos.");
-        var a = new AsociacionReciclaje { Id=id, DistritoId=distrito, Nombre=Ubicacion.Texto(nombre,2,120,"Nombre"),
-            Direccion=Ubicacion.Texto(direccion,5,250,"Dirección"), Latitud=lat, Longitud=lng, CapacidadKg=capacidad,
-            Demostracion=demo, Horario="Lunes a sábado · 08:00–17:00" };
-        a.Materiales = items.Select(m => new MaterialAceptado(id,m)).ToList();
+        var a = new AsociacionReciclaje
+        {
+            Id = id,
+            DistritoId = distrito,
+            Nombre = Ubicacion.Texto(nombre, 2, 120, "Nombre"),
+            Direccion = Ubicacion.Texto(direccion, 5, 250, "Dirección"),
+            Latitud = lat,
+            Longitud = lng,
+            CapacidadKg = capacidad,
+            Demostracion = demo,
+            Horario = "Lunes a sábado · 08:00–17:00"
+        };
+        a.Materiales = items.Select(m => new MaterialAceptado(id, m)).ToList();
         return a;
     }
     public void Verificar() => Verificada = true;
-    public void Reservar(decimal kg,MaterialReciclable material)
+    public void Reservar(decimal kg, MaterialReciclable material)
     {
-        if(!Verificada||!Materiales.Any(m=>m.Material==material)||kg>CapacidadKg-ReservadoKg)throw new ReglaNegocioException("La asociación no tiene capacidad o no recibe ese material.");
-        ReservadoKg+=kg;Version++;
+        if (!Verificada || !Materiales.Any(m => m.Material == material) || kg > CapacidadKg - ReservadoKg) throw new ReglaNegocioException("La asociación no tiene capacidad o no recibe ese material.");
+        ReservadoKg += kg; Version++;
     }
-    public void Liberar(decimal kg){ReservadoKg=Math.Max(0,ReservadoKg-kg);Version++;}
+    public void Liberar(decimal kg) { ReservadoKg = Math.Max(0, ReservadoKg - kg); Version++; }
 }
 

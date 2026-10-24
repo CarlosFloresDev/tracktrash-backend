@@ -29,16 +29,16 @@ public static class DependencyInjection
             config.GetConnectionString("TrackTrash") ?? throw new InvalidOperationException(
                 "Configura ConnectionStrings:TrackTrash mediante user-secrets o variables de entorno."),
             npg => npg.UseNetTopologySuite().MigrationsHistoryTable("__EFMigrationsHistory", "tracktrash")));
-        services.AddScoped<IPerfilRepository,PerfilRepository>();
-        services.AddScoped<ICatalogoRepository,CatalogoRepository>();
-        services.AddScoped<IContenedorRepository,ContenedorRepository>();
-        services.AddScoped<IIncidenciaRepository,IncidenciaRepository>();
-        services.AddScoped<INotificacionRepository,NotificacionRepository>();
-        services.AddScoped<IBeneficioRepository,BeneficioRepository>();
-        services.AddScoped<IHistoricoRepository,HistoricoRepository>();
-        services.AddScoped<IIndicadoresRepository,IndicadoresRepository>();
-        services.AddScoped<IRutaRepository,RutaRepository>();
-        if(config.GetValue<bool>("Jobs:Enabled"))services.AddHostedService<BackgroundJobs.RecordatoriosWorker>();
+        services.AddScoped<IPerfilRepository, PerfilRepository>();
+        services.AddScoped<ICatalogoRepository, CatalogoRepository>();
+        services.AddScoped<IContenedorRepository, ContenedorRepository>();
+        services.AddScoped<IIncidenciaRepository, IncidenciaRepository>();
+        services.AddScoped<INotificacionRepository, NotificacionRepository>();
+        services.AddScoped<IBeneficioRepository, BeneficioRepository>();
+        services.AddScoped<IHistoricoRepository, HistoricoRepository>();
+        services.AddScoped<IIndicadoresRepository, IndicadoresRepository>();
+        services.AddScoped<IRutaRepository, RutaRepository>();
+        if (config.GetValue<bool>("Jobs:Enabled")) services.AddHostedService<BackgroundJobs.RecordatoriosWorker>();
         services.AddScoped<ISolicitudRecojoRepository, SolicitudRecojoRepository>();
         services.AddScoped<IMovimientoPuntosRepository, MovimientoPuntosRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -46,8 +46,8 @@ public static class DependencyInjection
         services.AddScoped<IUsuarioActualService, UsuarioActualService>();
         services.AddSingleton<ICodigoEntregaService, CodigoEntregaService>();
         services.AddSingleton(TimeProvider.System);
-        services.AddSingleton<ISeguridadDispositivoService,SeguridadDispositivoService>();
-        foreach(var tipo in typeof(CrearSolicitudRecojoUseCase).Assembly.GetTypes().Where(t=>t.IsClass&&!t.IsAbstract&&t.Name.EndsWith("UseCase",StringComparison.Ordinal)))
+        services.AddSingleton<ISeguridadDispositivoService, SeguridadDispositivoService>();
+        foreach (var tipo in typeof(CrearSolicitudRecojoUseCase).Assembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("UseCase", StringComparison.Ordinal)))
             services.AddScoped(tipo);
         services.AddScoped<CrearSolicitudRecojoUseCase>();
         services.AddScoped<ListarSolicitudesRecojoUseCase>();
@@ -77,7 +77,9 @@ public static class DependencyInjection
                 o.MapInboundClaims = false;
                 o.TokenValidationParameters.NameClaimType = "sub";
                 o.TokenValidationParameters.RoleClaimType = "tracktrash_role";
-                o.Events = new JwtBearerEvents { OnTokenValidated = context =>
+                o.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
                 {
                     var identity = (ClaimsIdentity)context.Principal!.Identity!;
                     if (!Guid.TryParse(identity.FindFirst("sub")?.Value, out _))
@@ -92,7 +94,8 @@ public static class DependencyInjection
                     }
                     identity.AddClaim(new Claim("tracktrash_role", role));
                     return Task.CompletedTask;
-                }};
+                }
+                };
             });
         }
         services.AddAuthorization();

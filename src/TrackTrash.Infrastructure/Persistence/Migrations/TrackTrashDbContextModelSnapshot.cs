@@ -267,6 +267,47 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
                     b.ToTable("distritos", "tracktrash");
                 });
 
+            modelBuilder.Entity("TrackTrash.Domain.Entities.EventoAuditoria", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Accion")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
+
+                    b.Property<string>("Actor")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
+
+                    b.Property<string>("Campos")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
+
+                    b.Property<DateTimeOffset>("CreadoEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Entidad")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
+
+                    b.Property<string>("Referencia")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Entidad", "CreadoEn");
+
+                    b.ToTable("eventos_auditoria", "tracktrash");
+                });
+
             modelBuilder.Entity("TrackTrash.Domain.Entities.HistoricoSolicitud", b =>
                 {
                     b.Property<Guid>("Id")
@@ -490,6 +531,12 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1500)
                         .HasColumnType("character varying(1500)");
 
+                    b.Property<int>("RachaActual")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RachaMaxima")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("RecibirAvisos")
                         .HasColumnType("boolean");
 
@@ -497,6 +544,9 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(1500)
                         .HasColumnType("character varying(1500)");
+
+                    b.Property<DateOnly?>("UltimoDiaEntrega")
+                        .HasColumnType("date");
 
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
@@ -546,6 +596,31 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Ubicacion"), "gist");
 
                     b.ToTable("puntos_acopio", "tracktrash");
+                });
+
+            modelBuilder.Entity("TrackTrash.Domain.Entities.ReporteCiudadano", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContenedorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreadoEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("NivelEstimado")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContenedorId", "UsuarioId", "CreadoEn");
+
+                    b.ToTable("reportes_ciudadanos", "tracktrash");
                 });
 
             modelBuilder.Entity("TrackTrash.Domain.Entities.ReportePasoCamion", b =>
@@ -811,6 +886,15 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("AsociacionId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("TrackTrash.Domain.Entities.ReporteCiudadano", b =>
+                {
+                    b.HasOne("TrackTrash.Domain.Entities.Contenedor", null)
+                        .WithMany()
+                        .HasForeignKey("ContenedorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TrackTrash.Domain.Entities.ReportePasoCamion", b =>

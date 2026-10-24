@@ -10,5 +10,5 @@ public sealed class HistoricoSolicitud
     public Guid ActorId { get; private set; }
     public string Accion { get; private set; } = "";
     public DateTimeOffset CreadoEn { get; private set; }
-    public static HistoricoSolicitud Crear(Guid solicitud,Guid actor,string accion,DateTimeOffset ahora) => new(){Id=Guid.NewGuid(),SolicitudId=solicitud,ActorId=actor,Accion=accion,CreadoEn=ahora};
+    public static HistoricoSolicitud Crear(Guid solicitud, Guid actor, string accion, DateTimeOffset ahora) => new() { Id = Guid.NewGuid(), SolicitudId = solicitud, ActorId = actor, Accion = accion, CreadoEn = ahora };
 }

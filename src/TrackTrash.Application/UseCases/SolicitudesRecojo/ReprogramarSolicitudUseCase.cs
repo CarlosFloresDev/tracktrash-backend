@@ -5,12 +5,13 @@ using TrackTrash.Domain.Entities;
 using TrackTrash.Domain.Ports.Repositories;
 using TrackTrash.Domain.Ports.Persistence;
 namespace TrackTrash.Application.UseCases.SolicitudesRecojo;
-public sealed class ReprogramarSolicitudUseCase(ISolicitudRecojoRepository repo,IHistoricoRepository historial,IUsuarioActualService usuario,IUnitOfWork uow,TimeProvider reloj)
+
+public sealed class ReprogramarSolicitudUseCase(ISolicitudRecojoRepository repo, IHistoricoRepository historial, IUsuarioActualService usuario, IUnitOfWork uow, TimeProvider reloj)
 {
-    public async Task<SolicitudDto> ExecuteAsync(Guid id,DateTimeOffset fecha,CancellationToken ct)
+    public async Task<SolicitudDto> ExecuteAsync(Guid id, DateTimeOffset fecha, CancellationToken ct)
     {
-        var s=await repo.ObtenerAsync(id,ct)??throw new RecursoNoEncontradoException();
-        if(s.VecinoId!=usuario.Id)throw new AccesoDenegadoException();s.Reprogramar(fecha,reloj.GetUtcNow());
-        historial.Agregar(HistoricoSolicitud.Crear(id,usuario.Id,"Fecha reprogramada",reloj.GetUtcNow()));await uow.GuardarCambiosAsync(ct);return SolicitudDto.Desde(s,usuario.Id);
+        var s = await repo.ObtenerAsync(id, ct) ?? throw new RecursoNoEncontradoException();
+        if (s.VecinoId != usuario.Id) throw new AccesoDenegadoException(); s.Reprogramar(fecha, reloj.GetUtcNow());
+        historial.Agregar(HistoricoSolicitud.Crear(id, usuario.Id, "Fecha reprogramada", reloj.GetUtcNow())); await uow.GuardarCambiosAsync(ct); return SolicitudDto.Desde(s, usuario.Id);
     }
 }

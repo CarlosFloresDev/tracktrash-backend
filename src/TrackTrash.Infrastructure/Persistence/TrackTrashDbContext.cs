@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using TrackTrash.Domain.Entities;
 
 namespace TrackTrash.Infrastructure.Persistence;
 
-public sealed class TrackTrashDbContext(DbContextOptions<TrackTrashDbContext> options) : DbContext(options)
+public sealed class TrackTrashDbContext(DbContextOptions<TrackTrashDbContext> options, IHttpContextAccessor? http = null) : DbContext(options)
 {
     public DbSet<SolicitudRecojo> Solicitudes => Set<SolicitudRecojo>();
     public DbSet<MovimientoPuntos> MovimientosPuntos => Set<MovimientoPuntos>();
@@ -19,6 +20,14 @@ public sealed class TrackTrashDbContext(DbContextOptions<TrackTrashDbContext> op
     public DbSet<Beneficio> Beneficios => Set<Beneficio>();
     public DbSet<Canje> Canjes => Set<Canje>();
     public DbSet<HistoricoSolicitud> Historial => Set<HistoricoSolicitud>();
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var actor = http?.HttpContext?.User.FindFirst("sub")?.Value ?? "sistema";
+        var eventos = ChangeTracker.Entries().Where(e => e.Entity is not EventoAuditoria && e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
+            .Select(e => EventoAuditoria.Crear(actor, e.Metadata.ClrType.Name, string.Join(':', e.Properties.Where(p => p.Metadata.IsPrimaryKey()).Select(p => p.CurrentValue?.ToString() ?? "")), e.State.ToString(), string.Join(',', e.Properties.Where(p => p.IsModified || e.State == EntityState.Added).Select(p => p.Metadata.Name)), DateTimeOffset.UtcNow)).ToList();
+        Set<EventoAuditoria>().AddRange(eventos);
+        return base.SaveChangesAsync(cancellationToken);
+    }
 
     protected override void OnModelCreating(ModelBuilder model)
     {
