@@ -16,7 +16,7 @@ using TrackTrash.Infrastructure.Persistence;
 
 namespace TrackTrash.Tests;
 
-public sealed class ApiFlowTests : IAsyncLifetime
+public sealed partial class ApiFlowTests : IAsyncLifetime
 {
     private WebApplicationFactory<Program> _factory = null!;
     private string _connection = "";
