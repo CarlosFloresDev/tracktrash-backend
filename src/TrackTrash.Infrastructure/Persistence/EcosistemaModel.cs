@@ -9,6 +9,16 @@ public static class EcosistemaModel
     public static void ConfigurarEcosistema(this ModelBuilder m)
     {
         m.HasPostgresExtension("postgis");
+        m.Entity<RutaRecoleccion>().ToTable("rutas_recoleccion").HasKey(x=>x.Id);
+        m.Entity<RutaRecoleccion>().HasOne<Distrito>().WithMany().HasForeignKey(x=>x.DistritoId);
+        m.Entity<SuscripcionRuta>().ToTable("suscripciones_ruta").HasKey(x=>x.Id);
+        m.Entity<SuscripcionRuta>().HasIndex(x=>new{x.UsuarioId,x.RutaId}).IsUnique();
+        m.Entity<SuscripcionRuta>().HasIndex(x=>x.ProximoAviso);
+        m.Entity<SuscripcionRuta>().Property(x=>x.Version).IsConcurrencyToken();
+        m.Entity<SuscripcionRuta>().HasOne<RutaRecoleccion>().WithMany().HasForeignKey(x=>x.RutaId);
+        m.Entity<ReportePasoCamion>().ToTable("reportes_paso").HasKey(x=>x.Id);
+        m.Entity<ReportePasoCamion>().HasOne<RutaRecoleccion>().WithMany().HasForeignKey(x=>x.RutaId);
+        m.Entity<ReportePasoCamion>().HasIndex(x=>new{x.RutaId,x.UsuarioId,x.ReportadoEn});
         m.Entity<Distrito>().ToTable("distritos").HasKey(x=>x.Id);
         m.Entity<PerfilUsuario>().ToTable("perfiles").HasKey(x=>x.Id);
         m.Entity<PerfilUsuario>().Property(x=>x.Version).IsConcurrencyToken();

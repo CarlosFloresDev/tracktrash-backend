@@ -44,6 +44,7 @@ public sealed partial class ApiFlowTests : IAsyncLifetime
             {
                 ["ConnectionStrings:TrackTrash"] = _connection,
                 ["Authentication:Demo"] = "true",
+                ["Jobs:Enabled"] = "false",
                 ["Logging:LogLevel:Default"] = "Warning"
             }));
             web.ConfigureServices(services =>

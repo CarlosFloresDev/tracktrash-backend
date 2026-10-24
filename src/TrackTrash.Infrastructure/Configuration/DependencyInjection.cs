@@ -37,6 +37,8 @@ public static class DependencyInjection
         services.AddScoped<IBeneficioRepository,BeneficioRepository>();
         services.AddScoped<IHistoricoRepository,HistoricoRepository>();
         services.AddScoped<IIndicadoresRepository,IndicadoresRepository>();
+        services.AddScoped<IRutaRepository,RutaRepository>();
+        if(config.GetValue<bool>("Jobs:Enabled"))services.AddHostedService<BackgroundJobs.RecordatoriosWorker>();
         services.AddScoped<ISolicitudRecojoRepository, SolicitudRecojoRepository>();
         services.AddScoped<IMovimientoPuntosRepository, MovimientoPuntosRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -548,6 +548,65 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
                     b.ToTable("puntos_acopio", "tracktrash");
                 });
 
+            modelBuilder.Entity("TrackTrash.Domain.Entities.ReportePasoCamion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ReportadoEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("RutaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RutaId", "UsuarioId", "ReportadoEn");
+
+                    b.ToTable("reportes_paso", "tracktrash");
+                });
+
+            modelBuilder.Entity("TrackTrash.Domain.Entities.RutaRecoleccion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Demostracion")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Dias")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
+
+                    b.Property<Guid>("DistritoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeOnly>("HoraLocal")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
+
+                    b.Property<string>("Zona")
+                        .IsRequired()
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistritoId");
+
+                    b.ToTable("rutas_recoleccion", "tracktrash");
+                });
+
             modelBuilder.Entity("TrackTrash.Domain.Entities.SolicitudRecojo", b =>
                 {
                     b.Property<Guid>("Id")
@@ -625,6 +684,40 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("solicitudes_recojo", "tracktrash");
+                });
+
+            modelBuilder.Entity("TrackTrash.Domain.Entities.SuscripcionRuta", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MinutosAntes")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("ProximoAviso")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("RutaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProximoAviso");
+
+                    b.HasIndex("RutaId");
+
+                    b.HasIndex("UsuarioId", "RutaId")
+                        .IsUnique();
+
+                    b.ToTable("suscripciones_ruta", "tracktrash");
                 });
 
             modelBuilder.Entity("TrackTrash.Domain.Entities.AsociacionReciclaje", b =>
@@ -720,12 +813,39 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("TrackTrash.Domain.Entities.ReportePasoCamion", b =>
+                {
+                    b.HasOne("TrackTrash.Domain.Entities.RutaRecoleccion", null)
+                        .WithMany()
+                        .HasForeignKey("RutaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TrackTrash.Domain.Entities.RutaRecoleccion", b =>
+                {
+                    b.HasOne("TrackTrash.Domain.Entities.Distrito", null)
+                        .WithMany()
+                        .HasForeignKey("DistritoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TrackTrash.Domain.Entities.SolicitudRecojo", b =>
                 {
                     b.HasOne("TrackTrash.Domain.Entities.AsociacionReciclaje", null)
                         .WithMany()
                         .HasForeignKey("AsociacionId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("TrackTrash.Domain.Entities.SuscripcionRuta", b =>
+                {
+                    b.HasOne("TrackTrash.Domain.Entities.RutaRecoleccion", null)
+                        .WithMany()
+                        .HasForeignKey("RutaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TrackTrash.Domain.Entities.AsociacionReciclaje", b =>

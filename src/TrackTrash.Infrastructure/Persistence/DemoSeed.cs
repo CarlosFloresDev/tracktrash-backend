@@ -7,7 +7,7 @@ public static class DemoSeed
     public static readonly Guid AsociacionPrincipal=Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     public static async Task InicializarAsync(TrackTrashDbContext db,CancellationToken ct=default)
     {
-        if(await db.Distritos.AnyAsync(ct))return;
+        if(await db.Distritos.AnyAsync(ct)){await InicializarRutasAsync(db,ct);return;}
         var centro=Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
         var cayma=Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
         db.Distritos.AddRange(Distrito.Crear(centro,"Arequipa Cercado"),Distrito.Crear(cayma,"Cayma"));
@@ -27,6 +27,15 @@ public static class DemoSeed
         }
         db.PuntosAcopio.AddRange(PuntoAcopio.Crear("Estación Circular · Demo","Ubicación referencial de demostración",-16.3961,-71.5312,true),PuntoAcopio.Crear("Acopio del barrio · Demo","Ubicación referencial de demostración",-16.4050,-71.5410,true));
         db.Beneficios.AddRange(Beneficio.Crear("Semillas para tu hogar","Beneficio de prueba: kit de semillas. No representa un premio comercial real.",20,25,true),Beneficio.Crear("Bolsa reutilizable","Beneficio de demostración para validar el flujo de canje.",60,10,true),Beneficio.Crear("Taller de compostaje","Acceso de demostración a una actividad educativa.",100,8,true));
+        await db.SaveChangesAsync(ct);
+        await InicializarRutasAsync(db,ct);
+    }
+    private static async Task InicializarRutasAsync(TrackTrashDbContext db,CancellationToken ct)
+    {
+        if(await db.Set<RutaRecoleccion>().AnyAsync(ct))return;
+        var distrito=await db.Distritos.Select(d=>d.Id).FirstAsync(ct);
+        db.AddRange(RutaRecoleccion.Crear(distrito,"Ruta Centro · Demo","Zona de referencia de demostración",[1,3,5],new TimeOnly(19,0),true),
+            RutaRecoleccion.Crear(distrito,"Ruta Barrio Verde · Demo","Zona de referencia de demostración",[2,4,6],new TimeOnly(20,0),true));
         await db.SaveChangesAsync(ct);
     }
 }
