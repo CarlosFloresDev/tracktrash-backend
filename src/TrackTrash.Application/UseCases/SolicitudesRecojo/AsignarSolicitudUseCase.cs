@@ -12,9 +12,8 @@ public sealed class AsignarSolicitudUseCase(ISolicitudRecojoRepository repo,ICat
         var s=await repo.ObtenerAsync(id,ct)??throw new RecursoNoEncontradoException();
         if(s.VecinoId!=usuario.Id)throw new AccesoDenegadoException();
         if(!s.Latitud.HasValue)throw new Domain.Exceptions.ReglaNegocioException("La asignación automática requiere la ubicación del recojo.");
-        var a=(await catalogo.AsociacionesAsync(ct)).Where(a=>a.Verificada&&a.CapacidadKg-a.ReservadoKg>=s.CantidadEstimadaKg&&a.Materiales.Any(m=>m.Material==s.Material))
-            .Select(a=>new{A=a,Km=Ubicacion.DistanciaKm(s.Latitud.Value,s.Longitud!.Value,a.Latitud,a.Longitud)}).Where(a=>a.Km<=20).OrderBy(a=>a.Km).FirstOrDefault();
+        var a=(await catalogo.CandidatosAsync(s.Material,s.CantidadEstimadaKg,s.Latitud.Value,s.Longitud!.Value,ct)).FirstOrDefault();
         if(a is null)throw new Domain.Exceptions.ReglaNegocioException("No hay asociaciones elegibles a menos de 20 km para ese material y cantidad.");
-        s.Asignar(a.A.Id);historial.Agregar(HistoricoSolicitud.Crear(id,usuario.Id,"Asignada a "+a.A.Nombre,reloj.GetUtcNow()));await uow.GuardarCambiosAsync(ct);return SolicitudDto.Desde(s,usuario.Id);
+        s.Asignar(a.Id);historial.Agregar(HistoricoSolicitud.Crear(id,usuario.Id,"Asignada a "+a.Nombre,reloj.GetUtcNow()));await uow.GuardarCambiosAsync(ct);return SolicitudDto.Desde(s,usuario.Id);
     }
 }

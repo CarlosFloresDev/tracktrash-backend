@@ -30,10 +30,9 @@ public sealed class CrearSolicitudRecojoUseCase(ISolicitudRecojoRepository solic
         if(request.AutoAsignar)
         {
             if(!solicitud.Latitud.HasValue)throw new Domain.Exceptions.ReglaNegocioException("La asignación requiere ubicación del recojo.");
-            var a=(await catalogo.AsociacionesAsync(ct)).Where(a=>a.Verificada&&a.CapacidadKg-a.ReservadoKg>=solicitud.CantidadEstimadaKg&&a.Materiales.Any(m=>m.Material==solicitud.Material))
-                .Select(a=>new{Asociacion=a,Distancia=Ubicacion.DistanciaKm(solicitud.Latitud.Value,solicitud.Longitud!.Value,a.Latitud,a.Longitud)}).Where(a=>a.Distancia<=20).OrderBy(a=>a.Distancia).FirstOrDefault();
+            var a=(await catalogo.CandidatosAsync(solicitud.Material,solicitud.CantidadEstimadaKg,solicitud.Latitud.Value,solicitud.Longitud!.Value,ct)).FirstOrDefault();
             if(a is null)throw new Domain.Exceptions.ReglaNegocioException("No hay un aliado elegible a menos de 20 km para estos materiales.");
-            solicitud.Asignar(a.Asociacion.Id);historial.Agregar(HistoricoSolicitud.Crear(solicitud.Id,usuario.Id,"Asignada a "+a.Asociacion.Nombre,reloj.GetUtcNow()));
+            solicitud.Asignar(a.Id);historial.Agregar(HistoricoSolicitud.Crear(solicitud.Id,usuario.Id,"Asignada a "+a.Nombre,reloj.GetUtcNow()));
         }
         await uow.GuardarCambiosAsync(ct);
         return SolicitudDto.Desde(solicitud, usuario.Id);
