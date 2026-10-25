@@ -80,7 +80,7 @@ Prefijo común `/api/v1`. Todos requieren sesión salvo ingesta IoT, que requier
 | GET/POST /canjes | Propios; POST vecino `{beneficioId,clave}` UUID. Reintento de la misma clave no repite descuento ni consumo de stock. |
 | GET /operacion/indicadores | Admin; agregados globales, kg estimados, no impacto ambiental certificado. |
 | GET /rutas | Horarios semanales/próximo paso programado y suscripción propia. |
-| POST/DELETE /rutas/{id}/suscripcion | POST `{minutosAntes}` entre 5 y 60; DELETE cancela. UI usa 20. |
+| POST/DELETE /rutas/{id}/suscripcion | POST `{minutosAntes}` entre 5 y 60; crea o actualiza la propia sin duplicar. GET /rutas devuelve minutosAntes propio o null; DELETE cancela. UI permite elegir y guardar cambios. |
 | POST /rutas/{id}/paso | Vecino: reporte no verificado; límite de frecuencia 30 min. |
 | POST /iot/dispositivos | Admin: `{contenedorId,alturaCm}`; retorna id y clave una sola vez. |
 | POST /iot/dispositivos/{id}/lecturas | Clave individual; `{secuencia,distanciasCm,bateria,medidaEn}`. Mediana de 3–11 muestras; secuencia única por dispositivo. |
@@ -88,3 +88,32 @@ Prefijo común `/api/v1`. Todos requieren sesión salvo ingesta IoT, que requier
 La confirmación acredita 20 puntos hasta el máximo diario de 200 positivos (UTC−5); si se alcanzó el tope, confirma la entrega sin sumar más. Rachas usan días de entregas confirmadas. Canje registra movimiento negativo y valida saldo, stock y versión en la misma transacción. Ante 409 actualizar y reintentar con la misma clave de intención, sin crear una compra nueva.
 
 No se implementan pagos, fotos, depósitos validados, push externo ni posiciones/ETA de camión. Consultar [matriz](MATRIZ_COBERTURA.md) para el alcance por requisito.
+
+## Preferencias de avisos internos
+
+GET /perfil incluye `preferenciasAvisos`; PUT /perfil acepta ese objeto opcional junto a los campos ya existentes:
+
+```json
+{
+  "nombre": "Vecino de prueba",
+  "telefono": "",
+  "direccion": "Referencia de prueba",
+  "latitud": null,
+  "longitud": null,
+  "recibirAvisos": true,
+  "preferenciasAvisos": {
+    "horarios": true,
+    "recojos": false,
+    "incidencias": true,
+    "recompensas": true
+  }
+}
+```
+
+`recibirAvisos=false` pausa **todos los avisos nuevos**, conservando la selección por categoría. Omitir `preferenciasAvisos` conserva las preferencias guardadas, por compatibilidad con el cliente 0.2 anterior. Campos omitidos dentro de un objeto enviado valen true; enviar el objeto completo para editarlo.
+
+El servidor aplica estas opciones antes de añadir cada aviso a la misma transacción de negocio. No oculta ni borra historial, no cancela suscripciones y no afecta confirmaciones, puntos, canjes o incidencias. No se generan retroactivamente avisos silenciados. GET /notificaciones incorpora `tipo`: Sistema, Horarios, Recojos, Incidencias o Recompensas. La migración clasifica avisos anteriores por su clave y conserva su estado de lectura.
+
+Cambiar minutosAntes de una suscripción existente recalcula el próximo aviso futuro; repetir el mismo valor no cambia fecha ni versión. Todavía no hay entrega push ni cálculo de llegada GPS.
+
+Desplegar la migración y la API nuevas antes del cliente Flutter actualizado. El servidor anterior ignora las preferencias nuevas y no actualiza la anticipación de una suscripción existente. La compatibilidad comprobada permite que clientes anteriores sigan editando perfil sin reiniciar la selección por categoría.

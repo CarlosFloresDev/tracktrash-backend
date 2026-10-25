@@ -15,8 +15,8 @@ Flutter: ilustración original Tacho Vivo, iconos, animaciones con movimiento re
 
 ## Evidencia
 
-- Backend: 36 pruebas aprobadas contra PostgreSQL/PostGIS, compilación Release e imagen Docker sin root construida.
-- Flutter: 19 pruebas aprobadas y análisis sin incidencias; builds web y APK debug. QA de navegador con flujo real y capturas en mobile/docs/screenshots; instrucciones en su README.
+- Backend: 47 pruebas aprobadas contra PostgreSQL/PostGIS, compilación Release sin advertencias; Dockerfile sin root.
+- Flutter: 24 pruebas aprobadas y análisis sin incidencias; builds web y APK debug. QA de navegador con flujo real y capturas en mobile/docs/screenshots; instrucciones en su README.
 - Cada repositorio ejecuta GitHub Actions. Consultar los checks del PR para el último commit, sin confundir validación local con producción.
 - APK local: mobile/build/app/outputs/flutter-apk/app-debug.apk, para Android Emulator (`10.0.2.2:5080`). No se versiona. Recompilar con IP LAN para teléfono físico.
 
@@ -29,6 +29,10 @@ Pendientes principales: proyecto Supabase remoto (Auth/correo/JWKS y permisos de
 Los datos precargados de aliados, horarios, ubicaciones y beneficios son sintéticos e identificados como demostración. El simulador HTTP no es firmware ESP32 y no demuestra autonomía o resistencia ambiental. iOS no se compiló en Windows; APK aún requiere instalación y prueba en dispositivo.
 
 ## Retomar
+
+Continuación de avisos: preferencias por categoría y pausa global aplicadas en servidor; suscripciones con anticipación editable y actualizable sin duplicados. Migración `20261025033533_PreferenciasAvisos` aplicada en la BD local, conservando avisos y lecturas anteriores. El worker sigue usando avisos internos, sin proveedor push.
+
+QA adicional: preferencias guardadas desde Flutter y suscripción a 35 minutos, verificadas contra API/PostgreSQL y restauradas al terminar. Script mobile/tools/smoke_preferences_web.py; capturas nuevas de perfil/antelación. La sesión Flutter encontrada en 5300 se conservó; la compilación revisada se sirve en http://localhost:5301 con API en 5080 y ese origen habilitado solo en el proceso de desarrollo.
 
 Leer ambos README/AGENTS.md, consultar git status y continuar en las ramas actuales. Backend: Docker Desktop, `docker compose up -d --wait`, `dotnet run --project src/TrackTrash.Api`. App: `flutter run -d edge --web-port=5300 --dart-define=DEMO_MODE=true --dart-define=API_BASE_URL=http://localhost:5080`.
 

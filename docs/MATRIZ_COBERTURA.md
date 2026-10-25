@@ -9,7 +9,7 @@ Fuente: RF-01–40 y RNF-01–26 del informe original, más la estructura del cu
 | RF-01 | Parcial | Flutter integra registro/login Supabase, renovación y sesión segura. API valida JWT/JWKS. Falta probar proyecto remoto, correo y recuperación completa con retorno/enlace profundo. |
 | RF-02 | Parcial | Vecino, reciclador y administrador con permisos en API; faltan roles municipal/institucional y ámbitos de organización. |
 | RF-03 | Implementado | GET/PUT perfil, nombre, teléfono, referencia y coordenadas opcionales. |
-| RF-04 | Parcial | Preferencia global de recordatorios; falta selección independiente por tipo de aviso. |
+| RF-04 | Parcial | Pausa global y selección independiente por categoría de avisos internos (horarios, recojos, incidencias y canjes), persistidas y aplicadas por servidor. Historial previo conservado; tipos/proveedor push aún pendientes. |
 | RF-05 | Parcial | Registro API, distrito y ubicación espacial de contenedores; falta catálogo de tipos y su administración completa en UI. |
 | RF-06 | Parcial | Registro de dispositivo y protocolo HTTP de lecturas con clave individual, pruebas PostgreSQL y simulador; falta ESP32 físico. |
 | RF-07 | Implementado | Mediana de muestras, porcentaje y tres estados; además estado desconocido para lecturas antiguas. Pruebas de dominio/integración. |
@@ -19,7 +19,7 @@ Fuente: RF-01–40 y RNF-01–26 del informe original, más la estructura del cu
 | RF-11 | Parcial | Horarios semanales y zona/distrito; faltan empresas, camiones y geometría de rutas. |
 | RF-12 | Parcial | Reportes ciudadanos de paso persistentes, identificados como no verificados; falta integración GPS de empresas. |
 | RF-13 | Pendiente | ETA requiere posiciones y un modelo validado; el próximo horario programado no se presenta como predicción. |
-| RF-14 | Parcial | Suscripción a ruta y antelación configurable por API (20 min en UI), persistencia del próximo recordatorio; falta punto geográfico suscrito. |
+| RF-14 | Parcial | Suscripción a ruta, antelación editable en API y Flutter (5–60 min, 20 predeterminado), reprogramación al cambiarla e idempotencia del reintento; falta punto geográfico suscrito. |
 | RF-15 | Parcial | Reporte de paso con límite de frecuencia; todavía no alimenta un predictor ETA. |
 | RF-16 | Implementado | Mapa/lista consultando API cada 30 s en primer plano, filtros, fuente, antigüedad y caché pública explícita. |
 | RF-17 | Pendiente | No hay posiciones verificadas de camiones para mostrarlas. |
@@ -71,7 +71,7 @@ Fuente: RF-01–40 y RNF-01–26 del informe original, más la estructura del cu
 | RNF-18 | Implementado | ASP.NET Core/EF Core 10, PostgreSQL 17/PostGIS 3.5, repositorios LINQ y UnitOfWork. |
 | RNF-19 | Implementado | Columnas calculadas geography(Point,4326), índices GiST y búsquedas espaciales reales. |
 | RNF-20 | Parcial | Compose de BD, Dockerfile API sin root y migraciones versionadas; imagen construida localmente. Falta despliegue público configurado. |
-| RNF-21 | Parcial | 36 pruebas backend y 19 Flutter; puntos, concurrencia, permisos, recordatorios, sensores y canjes. No hay pruebas de depósitos inexistentes. |
+| RNF-21 | Parcial | 47 pruebas backend y 24 Flutter; puntos, concurrencia, permisos, recordatorios, preferencias, migración de historial, sensores y canjes. No hay pruebas de depósitos inexistentes. |
 | RNF-22 | Pendiente | Lecturas persistidas sin particionado/purga; definir retención antes de crecimiento de piloto. |
 | RNF-23 | Parcial | Modelo de distritos y consultas por datos; altas sin UI completa. Instituciones aún no modeladas. |
 | RNF-24 | Pendiente físico | Autonomía de batería no medida. |

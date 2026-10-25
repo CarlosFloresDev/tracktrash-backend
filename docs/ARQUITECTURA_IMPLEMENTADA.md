@@ -27,9 +27,9 @@ Domain no importa EF ni ASP.NET. Application usa DTOs/contratos de servicios y c
 | Horarios | RutaRecoleccion, SuscripcionRuta, ReportePasoCamion |
 | Recompensas | MovimientoPuntos, Beneficio, Canje |
 | Comunicación y control | Notificacion, EventoAuditoria |
-| Reglas y tipos auxiliares en archivos propios de Entities | Ubicacion, PoliticaRecompensas, EstadoIncidencia |
+| Reglas y tipos auxiliares en archivos propios de Entities | Ubicacion, PoliticaRecompensas, EstadoIncidencia, TipoAviso |
 
-**Nota de conteo:** hay 23 archivos en Entities; 20 contienen entidades persistidas. Ubicacion y PoliticaRecompensas son reglas estáticas y EstadoIncidencia es enum. Otros enums acompañan SolicitudRecojo. No deben contarse como tablas ni inventarse entidades para aumentar el tamaño.
+**Nota de conteo:** hay 24 archivos en Entities; 20 contienen entidades persistidas. Ubicacion y PoliticaRecompensas son reglas estáticas; EstadoIncidencia y TipoAviso son enums. Otros enums acompañan SolicitudRecojo. No deben contarse como tablas ni inventarse entidades para aumentar el tamaño.
 
 ```mermaid
 erDiagram
@@ -61,6 +61,7 @@ Relaciones conceptuales: no todas las asociaciones a identidad externa son FKs h
 - Geography calculada e índice GiST evitan dependencias espaciales en Domain. Distancia/radio se resuelven en PostgreSQL para contenedores y candidatos; catálogos de acopios se acotan antes de filtrar, limitación documentada para crecimiento.
 - Lecturas antiguas no sustituyen el nivel actual. Falta de datos se presenta como desconocido, nunca como contenedor vacío.
 - Recordatorios persisten próximo vencimiento y claves de evento; son avisos internos. No hay aún outbox con garantías de entrega de un proveedor push.
+- INotificadorUsuarioService aplica pausa y preferencias del destinatario dentro de la unidad de trabajo actual. Las pantallas no deciden qué avisos se persisten; operaciones e historial siguen disponibles si se silencian.
 
 ## Cliente
 

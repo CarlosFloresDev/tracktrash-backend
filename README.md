@@ -12,6 +12,7 @@ API ASP.NET Core 10 para reciclaje y atención ciudadana en Arequipa. [Cliente F
 - Horarios semanales, reportes no verificados de paso y suscripciones con recordatorios persistidos dentro de la app.
 - Libro de puntos: 20 por entrega, máximo 200 positivos al día de Perú; rachas actual/máxima y canjes transaccionales con costo/stock/idempotencia.
 - Bandeja propia con lectura y eventos deduplicados, panel operativo y auditoría de cambios sin copiar datos privados.
+- Preferencias por categoría (horarios, recojos, incidencias y canjes), pausa global y antelación de suscripciones editable. Silenciar avisos conserva el historial y no impide operaciones.
 
 No es todavía un piloto público. [Matriz de los 40 RF y 26 RNF](docs/MATRIZ_COBERTURA.md): identifica cada requisito implementado, parcial o pendiente, incluyendo depósitos, push, instituciones, fotos, GPS/ETA y validación física.
 
@@ -44,7 +45,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test.ps1
 dotnet build --configuration Release
 ```
 
-36 pruebas backend: reglas, arquitectura, permisos/privacidad HTTP, concurrencia/rollback, PostGIS, IoT, incidencias, saldo/stock, topes diarios, rachas, auditoría y recordatorios. Integración contra PostgreSQL real, no proveedor en memoria.
+47 pruebas backend: reglas, arquitectura, permisos/privacidad HTTP, concurrencia/rollback, PostGIS, IoT, incidencias, saldo/stock, topes diarios, rachas, auditoría, recordatorios y preferencias. Incluye preservar datos al migrar y actualizar suscripciones sin duplicarlas. Integración contra PostgreSQL real, no proveedor en memoria.
 
 Las pruebas crean/borran bases `tracktrash_test_<guid>` en PostgreSQL local/CI. Nunca usar la conexión de un proyecto remoto o producción. Alternativa: `TRACKTRASH_TEST_CONNECTION` y `dotnet test`. GitHub Actions ejecuta restore bloqueado, build y pruebas con PostGIS efímero.
 
