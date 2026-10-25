@@ -7,7 +7,7 @@ using TrackTrash.Domain.Ports.Persistence;
 namespace TrackTrash.Application.UseCases.Recompensas;
 
 public sealed class CanjearBeneficioUseCase(IBeneficioRepository beneficios, IPerfilRepository perfiles, IMovimientoPuntosRepository puntos,
-    INotificacionRepository avisos, IUsuarioActualService usuario, IUnitOfWork uow, ICodigoEntregaService codigos, TimeProvider reloj)
+    INotificadorUsuarioService avisos, IUsuarioActualService usuario, IUnitOfWork uow, ICodigoEntregaService codigos, TimeProvider reloj)
 {
     public async Task<CanjeDto> ExecuteAsync(CanjearRequest r, CancellationToken ct)
     {
@@ -19,7 +19,7 @@ public sealed class CanjearBeneficioUseCase(IBeneficioRepository beneficios, IPe
         if (p is null) { p = PerfilUsuario.Crear(usuario.Id); perfiles.Agregar(p); }
         b.Reservar(await puntos.ObtenerTotalAsync(usuario.Id, ct)); p.RegistrarOperacionSaldo();
         var c = Canje.Crear(usuario.Id, b, r.Clave, codigos.Generar(), reloj.GetUtcNow()); beneficios.Agregar(c); puntos.Agregar(MovimientoPuntos.PorCanje(c));
-        avisos.Agregar(Notificacion.Crear(usuario.Id, $"canje:{c.Id}", "Canje registrado", $"Tu código de canje para {b.Nombre} está en Mis canjes.", reloj.GetUtcNow()));
+        await avisos.AgregarAsync(Notificacion.Crear(usuario.Id, $"canje:{c.Id}", "Canje registrado", $"Tu código de canje para {b.Nombre} está en Mis canjes.", reloj.GetUtcNow(), TipoAviso.Recompensas), ct);
         await uow.GuardarCambiosAsync(ct); return c.Dto();
     }
 }

@@ -27,6 +27,10 @@ public static class EcosistemaModel
         m.Entity<Distrito>().ToTable("distritos").HasKey(x => x.Id);
         m.Entity<PerfilUsuario>().ToTable("perfiles").HasKey(x => x.Id);
         m.Entity<PerfilUsuario>().Property(x => x.Version).IsConcurrencyToken();
+        m.Entity<PerfilUsuario>().Property(x => x.AvisosHorarios).HasDefaultValue(true);
+        m.Entity<PerfilUsuario>().Property(x => x.AvisosRecojos).HasDefaultValue(true);
+        m.Entity<PerfilUsuario>().Property(x => x.AvisosIncidencias).HasDefaultValue(true);
+        m.Entity<PerfilUsuario>().Property(x => x.AvisosRecompensas).HasDefaultValue(true);
         m.Entity<PerfilUsuario>().HasOne<AsociacionReciclaje>().WithMany().HasForeignKey(x => x.AsociacionId).OnDelete(DeleteBehavior.Restrict);
         m.Entity<AsociacionReciclaje>().ToTable("asociaciones").HasKey(x => x.Id);
         m.Entity<AsociacionReciclaje>().Property(x => x.CapacidadKg).HasPrecision(12, 2);
@@ -55,6 +59,7 @@ public static class EcosistemaModel
         m.Entity<Incidencia>().HasOne<Contenedor>().WithMany().HasForeignKey(x => x.ContenedorId);
         m.Entity<Incidencia>().HasIndex(x => new { x.ContenedorId, x.Estado });
         m.Entity<Notificacion>().ToTable("notificaciones").HasKey(x => x.Id);
+        m.Entity<Notificacion>().Property(x => x.Tipo).HasConversion<string>().HasMaxLength(30).HasDefaultValue(TipoAviso.Sistema);
         m.Entity<Notificacion>().HasIndex(x => new { x.UsuarioId, x.ClaveUnica }).IsUnique();
         m.Entity<Notificacion>().HasIndex(x => new { x.UsuarioId, x.CreadaEn });
         m.Entity<Beneficio>().ToTable("beneficios").HasKey(x => x.Id);

@@ -12,6 +12,8 @@ public sealed class ActualizarPerfilUseCase(IPerfilRepository perfiles, IUsuario
         var p = await perfiles.ObtenerAsync(usuario.Id, ct);
         if (p is null) { p = PerfilUsuario.Crear(usuario.Id); perfiles.Agregar(p); }
         p.Actualizar(r.Nombre, r.Telefono ?? "", r.Direccion ?? "", r.Latitud, r.Longitud, r.RecibirAvisos);
+        if (r.PreferenciasAvisos is { } preferencias)
+            p.ActualizarPreferenciasAvisos(preferencias.Horarios, preferencias.Recojos, preferencias.Incidencias, preferencias.Recompensas);
         await uow.GuardarCambiosAsync(ct);
     }
 }

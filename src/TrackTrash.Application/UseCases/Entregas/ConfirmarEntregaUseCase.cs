@@ -8,7 +8,7 @@ using TrackTrash.Domain.Ports.Repositories;
 namespace TrackTrash.Application.UseCases.Entregas;
 
 public sealed class ConfirmarEntregaUseCase(ISolicitudRecojoRepository solicitudes,
-    IMovimientoPuntosRepository puntos, IUnitOfWork uow, IUsuarioActualService usuario, TimeProvider reloj, ICatalogoRepository catalogo, IHistoricoRepository historial, INotificacionRepository avisos, IPerfilRepository perfiles)
+    IMovimientoPuntosRepository puntos, IUnitOfWork uow, IUsuarioActualService usuario, TimeProvider reloj, ICatalogoRepository catalogo, IHistoricoRepository historial, INotificadorUsuarioService avisos, IPerfilRepository perfiles)
 {
     public async Task<SolicitudDto> ExecuteAsync(Guid id, ConfirmarEntregaRequest request, CancellationToken ct)
     {
@@ -28,7 +28,7 @@ public sealed class ConfirmarEntregaUseCase(ISolicitudRecojoRepository solicitud
             if (premiar) puntos.Agregar(MovimientoPuntos.PorEntrega(s, ahora));
             if (s.AsociacionId is Guid asociacion) { var a = await catalogo.AsociacionAsync(asociacion, ct); a?.Liberar(s.CantidadEstimadaKg); }
             historial.Agregar(HistoricoSolicitud.Crear(s.Id, usuario.Id, premiar ? "Entrega confirmada · 20 puntos" : "Entrega confirmada · límite diario de puntos alcanzado", ahora));
-            avisos.Agregar(Notificacion.Crear(s.VecinoId, $"confirmada:{s.Id}", "¡Una nueva entrega lograda!", premiar ? "Tu entrega fue confirmada y recibiste 20 puntos." : "Tu entrega fue confirmada. Ya alcanzaste los puntos disponibles por hoy.", ahora));
+            await avisos.AgregarAsync(Notificacion.Crear(s.VecinoId, $"confirmada:{s.Id}", "¡Una nueva entrega lograda!", premiar ? "Tu entrega fue confirmada y recibiste 20 puntos." : "Tu entrega fue confirmada. Ya alcanzaste los puntos disponibles por hoy.", ahora, TipoAviso.Recojos), ct);
             await uow.GuardarCambiosAsync(ct);
         }
         return SolicitudDto.Desde(s, usuario.Id);

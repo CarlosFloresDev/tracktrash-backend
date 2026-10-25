@@ -9,6 +9,7 @@ public sealed class ObtenerPerfilUseCase(IPerfilRepository perfiles, IUsuarioAct
     public async Task<PerfilDto> ExecuteAsync(CancellationToken ct)
     {
         var p = await perfiles.ObtenerAsync(usuario.Id, ct) ?? PerfilUsuario.Crear(usuario.Id);
-        return new(p.Id, p.Nombre, p.Telefono, p.Direccion, p.Latitud, p.Longitud, p.RecibirAvisos, p.AsociacionId, usuario.EsAdministrador ? "admin" : usuario.EsReciclador ? "reciclador" : "vecino", p.RachaVigente(reloj.GetUtcNow()), p.RachaMaxima);
+        return new(p.Id, p.Nombre, p.Telefono, p.Direccion, p.Latitud, p.Longitud, p.RecibirAvisos, p.AsociacionId, usuario.EsAdministrador ? "admin" : usuario.EsReciclador ? "reciclador" : "vecino", p.RachaVigente(reloj.GetUtcNow()), p.RachaMaxima,
+            new(p.AvisosHorarios, p.AvisosRecojos, p.AvisosIncidencias, p.AvisosRecompensas));
     }
 }

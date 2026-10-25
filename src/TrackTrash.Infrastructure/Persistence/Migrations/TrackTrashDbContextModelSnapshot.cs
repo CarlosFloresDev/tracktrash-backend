@@ -488,6 +488,13 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1500)
                         .HasColumnType("character varying(1500)");
 
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasDefaultValue("Sistema");
+
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(1500)
@@ -514,6 +521,26 @@ namespace TrackTrash.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid?>("AsociacionId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("AvisosHorarios")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("AvisosIncidencias")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("AvisosRecojos")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("AvisosRecompensas")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Direccion")
                         .IsRequired()

@@ -6,7 +6,7 @@ using TrackTrash.Domain.Ports.Repositories;
 using TrackTrash.Domain.Ports.Persistence;
 namespace TrackTrash.Application.UseCases.SolicitudesRecojo;
 
-public sealed class CancelarSolicitudUseCase(ISolicitudRecojoRepository repo, ICatalogoRepository catalogo, IHistoricoRepository historial, INotificacionRepository avisos, IUsuarioActualService usuario, IUnitOfWork uow, TimeProvider reloj)
+public sealed class CancelarSolicitudUseCase(ISolicitudRecojoRepository repo, ICatalogoRepository catalogo, IHistoricoRepository historial, INotificadorUsuarioService avisos, IUsuarioActualService usuario, IUnitOfWork uow, TimeProvider reloj)
 {
     public async Task<SolicitudDto> ExecuteAsync(Guid id, string motivo, CancellationToken ct)
     {
@@ -18,7 +18,7 @@ public sealed class CancelarSolicitudUseCase(ISolicitudRecojoRepository repo, IC
             s.Cancelar(motivo);
             if (reservada && s.AsociacionId is Guid a) { var asoc = await catalogo.AsociacionAsync(a, ct); asoc?.Liberar(s.CantidadEstimadaKg); }
             historial.Agregar(HistoricoSolicitud.Crear(id, usuario.Id, "Cancelación: " + s.MotivoCancelacion, reloj.GetUtcNow()));
-            avisos.Agregar(Notificacion.Crear(s.VecinoId, $"cancelada:{id}", "Recojo cancelado", s.MotivoCancelacion!, reloj.GetUtcNow()));
+            await avisos.AgregarAsync(Notificacion.Crear(s.VecinoId, $"cancelada:{id}", "Recojo cancelado", s.MotivoCancelacion!, reloj.GetUtcNow(), TipoAviso.Recojos), ct);
             await uow.GuardarCambiosAsync(ct);
         }
         return SolicitudDto.Desde(s, usuario.Id);

@@ -1,3 +1,4 @@
+using TrackTrash.Domain.Entities;
 using TrackTrash.Application.DTOs.SolicitudesRecojo;
 using TrackTrash.Application.Exceptions;
 using TrackTrash.Application.Ports.Services;
@@ -7,7 +8,7 @@ using TrackTrash.Domain.Ports.Repositories;
 namespace TrackTrash.Application.UseCases.SolicitudesRecojo;
 
 public sealed class AceptarSolicitudRecojoUseCase(ISolicitudRecojoRepository solicitudes,
-    IUnitOfWork uow, IUsuarioActualService usuario, IPerfilRepository perfiles, ICatalogoRepository catalogo, IHistoricoRepository historial, INotificacionRepository avisos, TimeProvider reloj)
+    IUnitOfWork uow, IUsuarioActualService usuario, IPerfilRepository perfiles, ICatalogoRepository catalogo, IHistoricoRepository historial, INotificadorUsuarioService avisos, TimeProvider reloj)
 {
     public async Task<SolicitudDto> ExecuteAsync(Guid id, CancellationToken ct)
     {
@@ -21,7 +22,7 @@ public sealed class AceptarSolicitudRecojoUseCase(ISolicitudRecojoRepository sol
             if (s.AsociacionId.HasValue && s.AsociacionId != a.Id) throw new AccesoDenegadoException();
             a.Reservar(s.CantidadEstimadaKg, s.Material); s.Asignar(a.Id);
             historial.Agregar(Domain.Entities.HistoricoSolicitud.Crear(s.Id, usuario.Id, "Recojo aceptado", reloj.GetUtcNow()));
-            avisos.Agregar(Domain.Entities.Notificacion.Crear(s.VecinoId, $"aceptada:{s.Id}", "Tu recojo fue aceptado", "El reciclador ya puede coordinar tu entrega.", reloj.GetUtcNow()));
+            await avisos.AgregarAsync(Domain.Entities.Notificacion.Crear(s.VecinoId, $"aceptada:{s.Id}", "Tu recojo fue aceptado", "El reciclador ya puede coordinar tu entrega.", reloj.GetUtcNow(), TipoAviso.Recojos), ct);
         }
         s.Aceptar(usuario.Id);
         await uow.GuardarCambiosAsync(ct);

@@ -15,6 +15,7 @@ using TrackTrash.Application.UseCases.SolicitudesRecojo;
 using TrackTrash.Domain.Ports.Persistence;
 using TrackTrash.Domain.Ports.Repositories;
 using TrackTrash.Infrastructure.Adapters.Identity;
+using TrackTrash.Infrastructure.Adapters.Notifications;
 using TrackTrash.Infrastructure.Persistence;
 using TrackTrash.Infrastructure.Persistence.Repositories;
 
@@ -34,6 +35,7 @@ public static class DependencyInjection
         services.AddScoped<IContenedorRepository, ContenedorRepository>();
         services.AddScoped<IIncidenciaRepository, IncidenciaRepository>();
         services.AddScoped<INotificacionRepository, NotificacionRepository>();
+        services.AddScoped<INotificadorUsuarioService, NotificadorUsuarioService>();
         services.AddScoped<IBeneficioRepository, BeneficioRepository>();
         services.AddScoped<IHistoricoRepository, HistoricoRepository>();
         services.AddScoped<IIndicadoresRepository, IndicadoresRepository>();

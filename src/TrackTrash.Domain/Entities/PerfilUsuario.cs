@@ -13,6 +13,29 @@ public sealed class PerfilUsuario
     public double? Longitud { get; private set; }
     public Guid? AsociacionId { get; private set; }
     public bool RecibirAvisos { get; private set; } = true;
+    public bool AvisosHorarios { get; private set; } = true;
+    public bool AvisosRecojos { get; private set; } = true;
+    public bool AvisosIncidencias { get; private set; } = true;
+    public bool AvisosRecompensas { get; private set; } = true;
+
+    public bool PermiteAviso(TipoAviso tipo) => RecibirAvisos && tipo switch
+    {
+        TipoAviso.Sistema => true,
+        TipoAviso.Horarios => AvisosHorarios,
+        TipoAviso.Recojos => AvisosRecojos,
+        TipoAviso.Incidencias => AvisosIncidencias,
+        TipoAviso.Recompensas => AvisosRecompensas,
+        _ => false
+    };
+
+    public void ActualizarPreferenciasAvisos(bool horarios, bool recojos, bool incidencias, bool recompensas)
+    {
+        AvisosHorarios = horarios;
+        AvisosRecojos = recojos;
+        AvisosIncidencias = incidencias;
+        AvisosRecompensas = recompensas;
+        Version++;
+    }
     public int Version { get; private set; }
     public DateOnly? UltimoDiaEntrega { get; private set; }
     public int RachaActual { get; private set; }

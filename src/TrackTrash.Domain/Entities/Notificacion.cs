@@ -12,8 +12,9 @@ public sealed class Notificacion
     public string Mensaje { get; private set; } = "";
     public DateTimeOffset CreadaEn { get; private set; }
     public bool Leida { get; private set; }
-    public static Notificacion Crear(Guid usuario, string clave, string titulo, string mensaje, DateTimeOffset ahora) =>
-        new() { Id = Guid.NewGuid(), UsuarioId = usuario, ClaveUnica = clave, Titulo = titulo, Mensaje = mensaje, CreadaEn = ahora };
+    public TipoAviso Tipo { get; private set; }
+    public static Notificacion Crear(Guid usuario, string clave, string titulo, string mensaje, DateTimeOffset ahora, TipoAviso tipo = TipoAviso.Sistema) =>
+        new() { Id = Guid.NewGuid(), UsuarioId = usuario, ClaveUnica = clave, Titulo = titulo, Mensaje = mensaje, CreadaEn = ahora, Tipo = tipo };
     public void Leer() => Leida = true;
 }
 
