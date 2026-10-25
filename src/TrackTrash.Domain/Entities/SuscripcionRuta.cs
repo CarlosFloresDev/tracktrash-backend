@@ -15,4 +15,11 @@ public sealed class SuscripcionRuta
         var s = new SuscripcionRuta { Id = Guid.NewGuid(), UsuarioId = usuario, RutaId = ruta.Id, MinutosAntes = minutos }; s.Programar(ruta, ahora); return s;
     }
     public void Programar(RutaRecoleccion ruta, DateTimeOffset ahora) { ProximoAviso = ruta.ProximoPaso(ahora.AddMinutes(MinutosAntes)).AddMinutes(-MinutosAntes); Version++; }
+    public void CambiarAntelacion(RutaRecoleccion ruta, int minutos, DateTimeOffset ahora)
+    {
+        if (minutos is < 5 or > 60) throw new Exceptions.ReglaNegocioException("El aviso debe anticiparse entre 5 y 60 minutos.");
+        if (MinutosAntes == minutos) return;
+        MinutosAntes = minutos;
+        Programar(ruta, ahora);
+    }
 }

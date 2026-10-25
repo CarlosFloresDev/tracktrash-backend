@@ -8,5 +8,13 @@ namespace TrackTrash.Application.UseCases.Rutas;
 public sealed class SuscribirRutaUseCase(IRutaRepository repo, IUsuarioActualService usuario, IUnitOfWork uow, TimeProvider reloj)
 {
     public async Task ExecuteAsync(Guid id, int minutos, CancellationToken ct)
-    { var ruta = await repo.ObtenerAsync(id, ct) ?? throw new RecursoNoEncontradoException(); if (await repo.SuscripcionAsync(id, usuario.Id, ct) is null) { repo.Agregar(SuscripcionRuta.Crear(usuario.Id, ruta, minutos, reloj.GetUtcNow())); await uow.GuardarCambiosAsync(ct); } }
+    {
+        var ruta = await repo.ObtenerAsync(id, ct) ?? throw new RecursoNoEncontradoException();
+        var suscripcion = await repo.SuscripcionAsync(id, usuario.Id, ct);
+        if (suscripcion is null)
+            repo.Agregar(SuscripcionRuta.Crear(usuario.Id, ruta, minutos, reloj.GetUtcNow()));
+        else
+            suscripcion.CambiarAntelacion(ruta, minutos, reloj.GetUtcNow());
+        await uow.GuardarCambiosAsync(ct);
+    }
 }
