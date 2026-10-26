@@ -65,7 +65,7 @@ Fuente: RF-01–40 y RNF-01–26 del informe original, más la estructura del cu
 | RNF-12 | Parcial | Límites diarios, frecuencia, idempotencia y concurrencia; falta detección avanzada de ubicaciones/patrones de fraude. |
 | RNF-13 | Parcial | Auditoría transaccional de actor/entidad/campos modificados sin copiar valores privados; falta política general de borrado lógico/retención. |
 | RNF-14 | Implementado local | Interfaz en español y accesos directos; errores del proveedor Auth pueden conservar su texto original. |
-| RNF-15 | Parcial | APK debug compilado; proyecto iOS configurado, sin compilar en Windows. Falta validar Android 8+, permisos y dispositivos físicos. |
+| RNF-15 | Parcial | Tres APK Release firmados y publicados por ABI; proyecto iOS configurado, sin compilar en Windows. Falta validar Android 8+, permisos y dispositivos físicos. |
 | RNF-16 | Parcial | Último mapa público con advertencia de antigüedad. No hay mapa base offline, cola de escrituras ni caché privada de recojos. |
 | RNF-17 | Por validar | Diseño adaptable, estados de carga/error/vacío, texto además de color y movimiento reducido; faltan sesiones de usabilidad y auditoría de accesibilidad. |
 | RNF-18 | Implementado | ASP.NET Core/EF Core 10, PostgreSQL 17/PostGIS 3.5, repositorios LINQ y UnitOfWork. |
@@ -80,7 +80,7 @@ Fuente: RF-01–40 y RNF-01–26 del informe original, más la estructura del cu
 
 ## Siguiente orden de trabajo
 
-1. Conectar Supabase real en un entorno de pruebas: Auth, correo, claves asimétricas, permisos del esquema y migraciones revisadas; verificar registro/renovación/cierre/recuperación.
+1. Completar la validación de Supabase: login/JWKS, roles SQL y migraciones ya probados en el piloto remoto; faltan registro/correo, renovación prolongada y recuperación completa. Instalar/probar APK en teléfono físico.
 2. Cerrar requisitos académicos prioritarios con el docente: depósitos y fraude, detalle multimaterial, roles institucionales, camiones/ETA. Evitar agregar entidades sin proceso que las use.
 3. Añadir Storage privado con validación de archivos y acceso temporal para fotos; proveedor push y outbox con reintentos observables.
 4. Cargar aliados/rutas/ubicaciones verificados, probar un dispositivo, medir carga y restauración, completar privacidad y probar usabilidad antes de piloto.

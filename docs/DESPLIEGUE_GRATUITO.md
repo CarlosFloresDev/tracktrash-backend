@@ -35,6 +35,8 @@ Credenciales locales ignoradas por Git: `.env.remote`, `artifacts/deployment/sup
 
 Flutter usa `config/pilot.public.json` de su repositorio: API HTTPS real, `DEMO_MODE=false`, URL/clave publicable de Supabase y `API_TIMEOUT_SECONDS=90`. La clave publicable identifica el proyecto; no concede acceso administrativo. No incluir claves service_role, SQL ni secretos en Flutter. Se creó un bucket público `downloads`, restringido a APK de hasta 50 MiB, sin permisos de escritura para clientes; no es Storage de fotos ciudadanas.
 
+Se publicaron tres APK Release firmados 0.2.1+3 (arm64-v8a, armeabi-v7a y x86_64) en ese bucket; firmas verificadas y enlaces públicos comprobados. [Descargas y hashes en el repositorio Flutter](https://github.com/CarlosFloresDev/tracktrash-mobile/blob/feat/ecosistema-tracktrash/docs/DISTRIBUCION_PILOTO.md). Todavía falta instalación física. En Flutter, Gitleaks identifica la clave `sb_publishable_` como clave genérica: `.gitleaks.toml` permite exclusivamente ese tipo público en `config/pilot.public.json`, manteniendo las demás comprobaciones activas.
+
 ## Límites del piloto gratuito
 
 [Render Free](https://render.com/docs/free) suspende el servicio inactivo; el primer acceso puede tardar y los recordatorios internos no tienen garantía de puntualidad mientras duerme. No implementar pings artificiales. Cloudflare Free sirve Flutter web; [Containers requiere Workers Paid](https://developers.cloudflare.com/containers/platform/pricing/) para alojar este backend sin reescritura.
