@@ -1,5 +1,7 @@
 # TrackTrash Backend
 
+[Guía para compañeros: flujo y ubicación del código](docs/GUIA_FLUJO_CODIGO.md).
+
 API ASP.NET Core 10 para reciclaje y atención ciudadana en Arequipa. [Cliente Flutter independiente](https://github.com/CarlosFloresDev/tracktrash-mobile). Incremento 0.2: **20 entidades persistidas y 40 casos de uso**, con reglas y persistencia real. El conteo describe el alcance, no certifica calidad ni cumplimiento total.
 
 ## Funciones disponibles

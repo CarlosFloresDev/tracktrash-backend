@@ -11,7 +11,7 @@ flowchart LR
   INF --> APP
   INF --> DOM
   INF --> DB[(PostgreSQL y PostGIS)]
-  AUTH[Supabase Auth: pendiente validar remoto] -. JWT/JWKS .-> INF
+  AUTH[Supabase Auth: JWT real validado en piloto remoto] -. JWT/JWKS .-> INF
   IOT[Simulador o dispositivo HTTP] -->|Clave individual| API
 ```
 
