@@ -15,6 +15,7 @@ using TrackTrash.Application.UseCases.SolicitudesRecojo;
 using TrackTrash.Domain.Ports.Persistence;
 using TrackTrash.Domain.Ports.Repositories;
 using TrackTrash.Infrastructure.Adapters.Identity;
+using TrackTrash.Infrastructure.Adapters.Notifications;
 using TrackTrash.Infrastructure.Persistence;
 using TrackTrash.Infrastructure.Persistence.Repositories;
 
@@ -28,7 +29,18 @@ public static class DependencyInjection
         services.AddDbContext<TrackTrashDbContext>(o => o.UseNpgsql(
             config.GetConnectionString("TrackTrash") ?? throw new InvalidOperationException(
                 "Configura ConnectionStrings:TrackTrash mediante user-secrets o variables de entorno."),
-            npg => npg.MigrationsHistoryTable("__EFMigrationsHistory", "tracktrash")));
+            npg => npg.UseNetTopologySuite().MigrationsHistoryTable("__EFMigrationsHistory", "tracktrash")));
+        services.AddScoped<IPerfilRepository, PerfilRepository>();
+        services.AddScoped<ICatalogoRepository, CatalogoRepository>();
+        services.AddScoped<IContenedorRepository, ContenedorRepository>();
+        services.AddScoped<IIncidenciaRepository, IncidenciaRepository>();
+        services.AddScoped<INotificacionRepository, NotificacionRepository>();
+        services.AddScoped<INotificadorUsuarioService, NotificadorUsuarioService>();
+        services.AddScoped<IBeneficioRepository, BeneficioRepository>();
+        services.AddScoped<IHistoricoRepository, HistoricoRepository>();
+        services.AddScoped<IIndicadoresRepository, IndicadoresRepository>();
+        services.AddScoped<IRutaRepository, RutaRepository>();
+        if (config.GetValue<bool>("Jobs:Enabled")) services.AddHostedService<BackgroundJobs.RecordatoriosWorker>();
         services.AddScoped<ISolicitudRecojoRepository, SolicitudRecojoRepository>();
         services.AddScoped<IMovimientoPuntosRepository, MovimientoPuntosRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -36,6 +48,9 @@ public static class DependencyInjection
         services.AddScoped<IUsuarioActualService, UsuarioActualService>();
         services.AddSingleton<ICodigoEntregaService, CodigoEntregaService>();
         services.AddSingleton(TimeProvider.System);
+        services.AddSingleton<ISeguridadDispositivoService, SeguridadDispositivoService>();
+        foreach (var tipo in typeof(CrearSolicitudRecojoUseCase).Assembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("UseCase", StringComparison.Ordinal)))
+            services.AddScoped(tipo);
         services.AddScoped<CrearSolicitudRecojoUseCase>();
         services.AddScoped<ListarSolicitudesRecojoUseCase>();
         services.AddScoped<ObtenerSolicitudRecojoUseCase>();
@@ -64,7 +79,9 @@ public static class DependencyInjection
                 o.MapInboundClaims = false;
                 o.TokenValidationParameters.NameClaimType = "sub";
                 o.TokenValidationParameters.RoleClaimType = "tracktrash_role";
-                o.Events = new JwtBearerEvents { OnTokenValidated = context =>
+                o.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
                 {
                     var identity = (ClaimsIdentity)context.Principal!.Identity!;
                     if (!Guid.TryParse(identity.FindFirst("sub")?.Value, out _))
@@ -74,12 +91,13 @@ public static class DependencyInjection
                     if (metadata is not null)
                     {
                         using var doc = JsonDocument.Parse(metadata);
-                        if (doc.RootElement.TryGetProperty("tracktrash_role", out var r) && r.GetString() == "reciclador")
-                            role = "reciclador";
+                        if (doc.RootElement.TryGetProperty("tracktrash_role", out var r) && r.GetString() is "reciclador" or "admin")
+                            role = r.GetString()!;
                     }
                     identity.AddClaim(new Claim("tracktrash_role", role));
                     return Task.CompletedTask;
-                }};
+                }
+                };
             });
         }
         services.AddAuthorization();

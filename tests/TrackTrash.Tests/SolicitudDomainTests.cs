@@ -35,7 +35,9 @@ public sealed class SolicitudDomainTests
     }
 
     [Theory]
-    [InlineData(0)] [InlineData(-1)] [InlineData(501)]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(501)]
     public void Cantidad_fuera_de_rango_es_rechazada(int kg) =>
         Assert.Throws<ReglaNegocioException>(() => SolicitudRecojo.Crear(Guid.NewGuid(), Guid.NewGuid(),
             MaterialReciclable.Vidrio, kg, "Av. Arequipa 123", DateTimeOffset.UtcNow.AddDays(1), DateTimeOffset.UtcNow, "123456"));

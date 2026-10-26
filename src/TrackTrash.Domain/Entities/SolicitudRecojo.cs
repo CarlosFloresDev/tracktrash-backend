@@ -2,7 +2,7 @@ using TrackTrash.Domain.Exceptions;
 
 namespace TrackTrash.Domain.Entities;
 
-public enum EstadoSolicitud { Pendiente, Aceptada, Confirmada }
+public enum EstadoSolicitud { Pendiente, Aceptada, EnCamino, Confirmada, Cancelada }
 public enum MaterialReciclable { PapelCarton, Plastico, Vidrio, Metal }
 
 public sealed class SolicitudRecojo
@@ -12,6 +12,10 @@ public sealed class SolicitudRecojo
     public Guid Id { get; private set; }
     public Guid VecinoId { get; private set; }
     public Guid? RecicladorId { get; private set; }
+    public Guid? AsociacionId { get; private set; }
+    public double? Latitud { get; private set; }
+    public double? Longitud { get; private set; }
+    public string? MotivoCancelacion { get; private set; }
     public Guid ClaveSolicitud { get; private set; }
     public MaterialReciclable Material { get; private set; }
     public decimal CantidadEstimadaKg { get; private set; }
@@ -24,7 +28,7 @@ public sealed class SolicitudRecojo
     public int Version { get; private set; }
 
     public static SolicitudRecojo Crear(Guid vecinoId, Guid clave, MaterialReciclable material,
-        decimal cantidadKg, string direccion, DateTimeOffset programada, DateTimeOffset ahora, string codigo)
+        decimal cantidadKg, string direccion, DateTimeOffset programada, DateTimeOffset ahora, string codigo, double? latitud = null, double? longitud = null)
     {
         if (vecinoId == Guid.Empty || clave == Guid.Empty)
             throw new ReglaNegocioException("La solicitud debe identificar al vecino y su operación.");
@@ -40,12 +44,22 @@ public sealed class SolicitudRecojo
         if (codigo.Length != 6 || !codigo.All(char.IsAsciiDigit))
             throw new ReglaNegocioException("El código de confirmación debe tener seis dígitos.");
 
+        if (latitud.HasValue != longitud.HasValue) throw new ReglaNegocioException("Indica ambas coordenadas.");
+        if (latitud.HasValue) Ubicacion.Validar(latitud.Value, longitud!.Value);
         return new SolicitudRecojo
         {
-            Id = Guid.NewGuid(), VecinoId = vecinoId, ClaveSolicitud = clave,
-            Material = material, CantidadEstimadaKg = cantidadKg, Direccion = direccion.Trim(),
-            ProgramadaPara = programada.ToUniversalTime(), CreadaEn = ahora.ToUniversalTime(),
-            CodigoConfirmacion = codigo, Estado = EstadoSolicitud.Pendiente
+            Id = Guid.NewGuid(),
+            VecinoId = vecinoId,
+            ClaveSolicitud = clave,
+            Material = material,
+            CantidadEstimadaKg = cantidadKg,
+            Direccion = direccion.Trim(),
+            ProgramadaPara = programada.ToUniversalTime(),
+            CreadaEn = ahora.ToUniversalTime(),
+            CodigoConfirmacion = codigo,
+            Estado = EstadoSolicitud.Pendiente,
+            Latitud = latitud,
+            Longitud = longitud
         };
     }
 
@@ -61,6 +75,25 @@ public sealed class SolicitudRecojo
         Version++;
     }
 
+    public void Asignar(Guid asociacion) { if (Estado != EstadoSolicitud.Pendiente) throw new ReglaNegocioException("Solo se asignan solicitudes pendientes."); AsociacionId = asociacion; Version++; }
+    public void IniciarViaje(Guid reciclador)
+    {
+        if (RecicladorId != reciclador) throw new ReglaNegocioException("Solo el reciclador asignado puede iniciar el viaje.");
+        if (Estado == EstadoSolicitud.EnCamino) return;
+        if (Estado != EstadoSolicitud.Aceptada) throw new ReglaNegocioException("El recojo debe estar aceptado.");
+        Estado = EstadoSolicitud.EnCamino; Version++;
+    }
+    public void Cancelar(string motivo)
+    {
+        if (Estado is EstadoSolicitud.Confirmada or EstadoSolicitud.Cancelada) throw new ReglaNegocioException("Este recojo ya está cerrado.");
+        MotivoCancelacion = Ubicacion.Texto(motivo, 5, 300, "Motivo"); Estado = EstadoSolicitud.Cancelada; Version++;
+    }
+    public void Reprogramar(DateTimeOffset fecha, DateTimeOffset ahora)
+    {
+        if (Estado != EstadoSolicitud.Pendiente || fecha <= ahora || fecha > ahora.AddDays(30)) throw new ReglaNegocioException("Solo puedes reprogramar un recojo pendiente dentro de los próximos 30 días.");
+        ProgramadaPara = fecha.ToUniversalTime(); Version++;
+    }
+
     public bool Confirmar(Guid recicladorId, string codigo, DateTimeOffset ahora)
     {
         if (RecicladorId != recicladorId)
@@ -68,7 +101,7 @@ public sealed class SolicitudRecojo
         if (CodigoConfirmacion != codigo)
             throw new ReglaNegocioException("El código de entrega no es correcto.");
         if (Estado == EstadoSolicitud.Confirmada) return false;
-        if (Estado != EstadoSolicitud.Aceptada)
+        if (Estado is not EstadoSolicitud.Aceptada and not EstadoSolicitud.EnCamino)
             throw new ReglaNegocioException("La solicitud debe estar aceptada antes de confirmarse.");
         Estado = EstadoSolicitud.Confirmada;
         ConfirmadaEn = ahora.ToUniversalTime();

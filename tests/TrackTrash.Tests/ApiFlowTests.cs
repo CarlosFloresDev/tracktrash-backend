@@ -16,7 +16,7 @@ using TrackTrash.Infrastructure.Persistence;
 
 namespace TrackTrash.Tests;
 
-public sealed class ApiFlowTests : IAsyncLifetime
+public sealed partial class ApiFlowTests : IAsyncLifetime
 {
     private WebApplicationFactory<Program> _factory = null!;
     private string _connection = "";
@@ -44,6 +44,7 @@ public sealed class ApiFlowTests : IAsyncLifetime
             {
                 ["ConnectionStrings:TrackTrash"] = _connection,
                 ["Authentication:Demo"] = "true",
+                ["Jobs:Enabled"] = "false",
                 ["Logging:LogLevel:Default"] = "Warning"
             }));
             web.ConfigureServices(services =>
@@ -52,11 +53,13 @@ public sealed class ApiFlowTests : IAsyncLifetime
                 services.RemoveAll<DbContextOptions<TrackTrashDbContext>>();
                 services.RemoveAll<IDbContextOptionsConfiguration<TrackTrashDbContext>>();
                 services.AddDbContext<TrackTrashDbContext>(o => o.UseNpgsql(_connection,
-                    npg => npg.MigrationsHistoryTable("__EFMigrationsHistory", "tracktrash")));
+                    npg => npg.UseNetTopologySuite().MigrationsHistoryTable("__EFMigrationsHistory", "tracktrash")));
             });
         });
         using var scope = _factory.Services.CreateScope();
-        await scope.ServiceProvider.GetRequiredService<TrackTrashDbContext>().Database.MigrateAsync();
+        var db = scope.ServiceProvider.GetRequiredService<TrackTrashDbContext>();
+        await db.Database.MigrateAsync();
+        await DemoSeed.InicializarAsync(db);
     }
 
     public async Task DisposeAsync()
@@ -147,7 +150,7 @@ public sealed class ApiFlowTests : IAsyncLifetime
     public async Task Dos_contextos_no_pueden_aceptar_la_misma_solicitud()
     {
         using var vecino = Client("demo-vecino"); var s = await Crear(vecino);
-        var options = new DbContextOptionsBuilder<TrackTrashDbContext>().UseNpgsql(_connection).Options;
+        var options = new DbContextOptionsBuilder<TrackTrashDbContext>().UseNpgsql(_connection, o => o.UseNetTopologySuite()).Options;
         await using var a = new TrackTrashDbContext(options); await using var b = new TrackTrashDbContext(options);
         var primero = await a.Solicitudes.SingleAsync(); var segundo = await b.Solicitudes.SingleAsync();
         primero.Aceptar(Guid.NewGuid()); segundo.Aceptar(Guid.NewGuid());
@@ -161,7 +164,7 @@ public sealed class ApiFlowTests : IAsyncLifetime
         using var vecino = Client("demo-vecino"); using var r = Client("demo-reciclador");
         var dto = await Crear(vecino);
         (await r.PostAsync($"/api/v1/solicitudes/{dto.Id}/aceptacion", null)).EnsureSuccessStatusCode();
-        var options = new DbContextOptionsBuilder<TrackTrashDbContext>().UseNpgsql(_connection).Options;
+        var options = new DbContextOptionsBuilder<TrackTrashDbContext>().UseNpgsql(_connection, o => o.UseNetTopologySuite()).Options;
         await using (var db = new TrackTrashDbContext(options))
         {
             var s = await db.Solicitudes.SingleAsync();

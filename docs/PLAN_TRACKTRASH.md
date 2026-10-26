@@ -1,6 +1,6 @@
 # Plan de desarrollo de TrackTrash
 
-Fecha de investigación: 23 de octubre de 2026. Plan del producto completo. Actualización: el primer incremento de recojos ya se implementó en repositorios separados; ver [estado de desarrollo](ESTADO_DESARROLLO.md). Los módulos futuros de este documento siguen siendo propuesta.
+Fecha de investigación inicial: 23 de octubre de 2026. Plan del producto completo conservado como antecedente. Actualización 24/10: el incremento 0.2 amplía el primer flujo; ver [estado de desarrollo](ESTADO_DESARROLLO.md), [arquitectura implementada](ARQUITECTURA_IMPLEMENTADA.md) y [cobertura por requisito](MATRIZ_COBERTURA.md). Las propuestas de este plan no equivalen a funcionalidades terminadas.
 
 ## 1. Recomendación
 

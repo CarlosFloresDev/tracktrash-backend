@@ -27,7 +27,8 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
             context.Response.StatusCode = status;
             await context.Response.WriteAsJsonAsync(new ProblemDetails
             {
-                Status = status, Title = status == 500 ? "No pudimos completar la operación." : ex.Message,
+                Status = status,
+                Title = status == 500 ? "No pudimos completar la operación." : ex.Message,
                 Extensions = { ["traceId"] = context.TraceIdentifier }
             }, options: null, contentType: "application/problem+json", cancellationToken: context.RequestAborted);
         }
