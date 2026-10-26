@@ -9,5 +9,6 @@ WORKDIR /app
 ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080
 COPY --from=build /out .
+COPY deployment/certs/ /app/certs/
 USER $APP_UID
 ENTRYPOINT ["dotnet", "TrackTrash.Api.dll"]

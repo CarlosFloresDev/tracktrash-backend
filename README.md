@@ -93,6 +93,8 @@ Imagen construida localmente. Producción requiere secretos del host, base acces
 
 ## Arquitectura y trabajo
 
+Piloto remoto en preparación: [recursos creados, configuración y pendientes de despliegue](docs/DESPLIEGUE_GRATUITO.md). Supabase ya tiene las siete migraciones; falta el acceso de Render al repositorio privado para publicar la API.
+
 | Proyecto | Responsabilidad |
 |---|---|
 | Domain | Entidades, reglas, repositorios e IUnitOfWork; sin EF/ASP.NET |

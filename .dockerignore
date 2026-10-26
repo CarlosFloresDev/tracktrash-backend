@@ -4,6 +4,7 @@
 **/bin
 **/obj
 artifacts
+supabase
 TestResults
 **/*.user
 **/*.suo
