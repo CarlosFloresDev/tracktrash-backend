@@ -17,6 +17,8 @@ Render pudo acceder después del cambio de visibilidad; `render.yaml` validado. 
 
 ## Configuración del servidor
 
+Confirmación de registro corregida el 25/10/2026: el valor inicial `http://localhost:3000` de Supabase Auth se sustituyó por `https://tracktrash.pages.dev`, con retornos exactos a ese dominio. [Configuración reproducible y prueba](../deployment/auth/README.md). Enlace sintético, confirmación y login posterior verificados; no requiere actualizar APK. SMTP propio, entrega masiva y recuperación completa siguen pendientes.
+
 `render.yaml` describe un contenedor Docker, puerto 8080, Production y autenticación demo desactivada. `ConnectionStrings__TrackTrash` se introduce como secreto en Render, usando el rol limitado `tracktrash_api`, nunca el propietario postgres:
 
 ```text

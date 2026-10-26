@@ -1,0 +1,7 @@
+# Remote Auth settings only. EF migrations own the application schema.
+# The CLI updates declared properties; preview with config diff before push.
+project_id = "tracktrash-auth"
+
+[auth]
+site_url = "https://tracktrash.pages.dev"
+additional_redirect_urls = ["https://tracktrash.pages.dev", "https://tracktrash.pages.dev/"]
