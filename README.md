@@ -14,7 +14,7 @@ API ASP.NET Core 10 para reciclaje y atención ciudadana en Arequipa. [Cliente F
 - Bandeja propia con lectura y eventos deduplicados, panel operativo y auditoría de cambios sin copiar datos privados.
 - Preferencias por categoría (horarios, recojos, incidencias y canjes), pausa global y antelación de suscripciones editable. Silenciar avisos conserva el historial y no impide operaciones.
 
-No es todavía un piloto público. [Matriz de los 40 RF y 26 RNF](docs/MATRIZ_COBERTURA.md): identifica cada requisito implementado, parcial o pendiente, incluyendo depósitos, push, instituciones, fotos, GPS/ETA y validación física.
+Piloto técnico disponible en [Flutter web](https://tracktrash.pages.dev) y [salud de la API](https://tracktrash-api.onrender.com/health/ready), con datos ficticios y autenticación Supabase real. La rama actual es `feat/ecosistema-tracktrash`; main conserva el primer incremento. [Matriz de los 40 RF y 26 RNF](docs/MATRIZ_COBERTURA.md): identifica cada requisito implementado, parcial o pendiente, incluyendo depósitos, push, instituciones, fotos, GPS/ETA y validación física.
 
 ## Ejecutar en Windows
 
@@ -89,11 +89,11 @@ Dockerfile multietapa, usuario no root, puerto 8080, sin migración automática 
 docker build -t tracktrash-api:0.2 .
 ```
 
-Imagen construida localmente. Producción requiere secretos del host, base accesible, HTTPS y proxy configurado con sus proxies conocidos, observabilidad y respaldos restaurables. No se ha realizado despliegue público ni prueba de carga. [Referencia de contenedores .NET](https://learn.microsoft.com/dotnet/core/docker/introduction).
+Imagen construida localmente y desplegada en Render Free con HTTPS, secretos del host y Supabase. El piloto todavía requiere observabilidad operativa, prueba de carga y respaldos restaurados; no acredita disponibilidad de producción. [Referencia de contenedores .NET](https://learn.microsoft.com/dotnet/core/docker/introduction).
 
 ## Arquitectura y trabajo
 
-Piloto remoto en preparación: [recursos creados, configuración y pendientes de despliegue](docs/DESPLIEGUE_GRATUITO.md). Supabase ya tiene las siete migraciones; falta el acceso de Render al repositorio privado para publicar la API.
+Piloto remoto: [recursos creados, configuración, evidencia y pendientes](docs/DESPLIEGUE_GRATUITO.md). Supabase tiene las siete migraciones; API y web publicadas en planes gratuitos. Render puede dormir por inactividad.
 
 | Proyecto | Responsabilidad |
 |---|---|

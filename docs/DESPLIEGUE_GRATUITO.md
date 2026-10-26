@@ -6,14 +6,14 @@
 - Proyecto gratuito: `owfjolparskdiazhfubr`, región us-east-1. [Dashboard](https://supabase.com/dashboard/project/owfjolparskdiazhfubr).
 - Siete migraciones EF aplicadas mediante SQL idempotente. PostGIS y esquema privado `tracktrash`; EF sigue siendo la autoridad del esquema.
 - Tres identidades de prueba confirmadas en Auth, con roles en `app_metadata.tracktrash_role`; no se enviaron correos. Los datos del piloto son ficticios.
-- Cloudflare Pages: proyecto `tracktrash`, dirección reservada `https://tracktrash.pages.dev`. Todavía sin publicación de Flutter.
-- Render: sesión CLI y workspace conectados. No hay servicio creado: Render rechaza el repositorio privado como inaccesible y la validación no encuentra su rama. GitHub confirma que la rama existe.
+- Web Flutter publicada en [tracktrash.pages.dev](https://tracktrash.pages.dev), con Supabase real y modo demo desactivado.
+- API publicada en [tracktrash-api.onrender.com](https://tracktrash-api.onrender.com/health/ready), servicio Render Free `srv-dbfbleu7bikc73ctg55g`, región Virginia. Primer despliegue `dep-dbfblfe7bikc73ctg6pg`, commit `96faae9`.
 
-## Acceso pendiente de Render
+## Repositorios y actualizaciones
 
-Revisar la [instalación de Render en GitHub](https://github.com/apps/render/installations/new) en **CarlosFloresDev** e incluir **tracktrash-backend** en Repository access. En Render, Account Settings → Account Security → Git Deployment Credentials debe estar conectada esa misma cuenta. Es una autorización entre servicios distinta del inicio de sesión CLI. [Guía oficial](https://render.com/docs/git-provider).
+Ambos repositorios se hicieron públicos con autorización del propietario para compartirlos con compañeros. Antes se revisaron los historiales con Gitleaks 8.30.1: 27 commits backend y 21 Flutter, sin detecciones. Las credenciales remotas, firmas Android y archivos originales del curso permanecen fuera de Git.
 
-Después, validar `render.yaml` y crear el servicio free con la rama `feat/ecosistema-tracktrash`. No convertir el repositorio en público. No desplegar desde main: todavía contiene el primer incremento.
+Render pudo acceder después del cambio de visibilidad; `render.yaml` validado. La rama desplegada es `feat/ecosistema-tracktrash`; main todavía contiene el primer incremento. Los PR #2 siguen abiertos. Autodespliegue desactivado: ejecutar despliegue explícito después de revisar CI y migraciones. No modificar el plan gratuito.
 
 ## Configuración del servidor
 
@@ -23,7 +23,7 @@ Después, validar `render.yaml` y crear el servicio free con la rama `feat/ecosi
 Host=aws-0-us-east-1.pooler.supabase.com;Port=5432;Database=postgres;Username=tracktrash_api.owfjolparskdiazhfubr;Password=<secreto>;SSL Mode=VerifyFull;Root Certificate=/app/certs/supabase-root-2021.crt;Search Path=public,extensions;Maximum Pool Size=5;GSS Encryption Mode=Disable;Timeout=15
 ```
 
-Se verificó desde una API local en Production: `/health/ready` respondió 200 contra Supabase usando ese rol y validación TLS completa; `/api/v1/perfil` respondió 200 con JWT real de Supabase. Esto no equivale a un despliegue de la API en Render ni a una prueba de Flutter remoto.
+Se verificó desde API local y después desde Render: readiness 200 con rol SQL limitado y TLS completo, perfil 200 con JWT real para vecino/reciclador/admin, anónimo y token demo 401, vecino accediendo a indicadores admin 403 y admin 200. Preflight CORS 204 para Pages. Recojo sintético creado (201), consultado y cancelado; Location HTTPS correcto. El recorrido en Edge headless contra Pages verificó login real, perfil, mapa y cierre de sesión, sin excepciones de navegador ni controles demo.
 
 El rol runtime tiene acceso al esquema de la aplicación; `anon` y `authenticated` no tienen acceso directo a ese esquema. La API valida los JWT asimétricos del proyecto. `/health/ready` exige conexión y ausencia de migraciones pendientes. El arranque no migra ni precarga datos. Las operaciones de migración y `--seed-pilot` son explícitas; el seed exige `Pilot:Enabled` y tres UUID distintos de Auth.
 
@@ -33,12 +33,12 @@ Render termina TLS. Solo su marca de proceso `RENDER=true` y `RENDER_EXTERNAL_UR
 
 Credenciales locales ignoradas por Git: `.env.remote`, `artifacts/deployment/supabase-keys.json`, `artifacts/deployment/pilot-accounts.private.json`. No publicar esos archivos ni logs privados. El certificado público sí se versiona. `.dockerignore` excluye secretos, artifacts y metadatos de Supabase.
 
-Con el servicio operativo: verificar readiness, JWT real, permisos y una operación persistida; compilar Flutter con su URL HTTPS real, `DEMO_MODE=false`, URL/clave publicable de Supabase y `API_TIMEOUT_SECONDS=90`. Publicar web en Pages; generar APK firmado por ABI y probar en un teléfono antes de compartir. No incluir claves service_role, SQL ni secretos en Flutter.
+Flutter usa `config/pilot.public.json` de su repositorio: API HTTPS real, `DEMO_MODE=false`, URL/clave publicable de Supabase y `API_TIMEOUT_SECONDS=90`. La clave publicable identifica el proyecto; no concede acceso administrativo. No incluir claves service_role, SQL ni secretos en Flutter. Se creó un bucket público `downloads`, restringido a APK de hasta 50 MiB, sin permisos de escritura para clientes; no es Storage de fotos ciudadanas.
 
 ## Límites del piloto gratuito
 
 [Render Free](https://render.com/docs/free) suspende el servicio inactivo; el primer acceso puede tardar y los recordatorios internos no tienen garantía de puntualidad mientras duerme. No implementar pings artificiales. Cloudflare Free sirve Flutter web; [Containers requiere Workers Paid](https://developers.cloudflare.com/containers/platform/pricing/) para alojar este backend sin reescritura.
 
-Los APK pueden superar el [máximo de 25 MiB por archivo de Pages](https://developers.cloudflare.com/pages/platform/limits/); usar distribución separada, por ejemplo un bucket público dedicado de Storage exclusivamente para binarios. Todavía no hay APK remoto publicado ni cuenta de correo/SMTP, push, hardware, prueba de carga o respaldo restaurado verificados.
+Los APK pueden superar el [máximo de 25 MiB por archivo de Pages](https://developers.cloudflare.com/pages/platform/limits/); se distribuyen aparte mediante Storage. Correo/SMTP, recuperación completa, push, hardware, instalación física, prueba de carga y respaldo restaurado siguen pendientes. Las cuentas confirmadas del piloto permiten probar sin correos; no se certifica el registro público completo.
 
 Validación local de este incremento: 53 pruebas backend aprobadas sobre PostgreSQL/PostGIS local, Release sin errores ni advertencias; 24 pruebas Flutter aprobadas y analyze sin incidencias.

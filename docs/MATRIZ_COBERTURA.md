@@ -6,7 +6,7 @@ Fuente: RF-01–40 y RNF-01–26 del informe original, más la estructura del cu
 
 | ID | Estado | Evidencia actual y alcance pendiente |
 |---|---|---|
-| RF-01 | Parcial | Flutter integra registro/login Supabase, renovación y sesión segura. API valida JWT/JWKS. Falta probar proyecto remoto, correo y recuperación completa con retorno/enlace profundo. |
+| RF-01 | Parcial | Login real Supabase probado en Flutter publicado; API Render valida JWT/JWKS. Registro, renovación prolongada, correo y recuperación completa con retorno/enlace profundo aún requieren validación. |
 | RF-02 | Parcial | Vecino, reciclador y administrador con permisos en API; faltan roles municipal/institucional y ámbitos de organización. |
 | RF-03 | Implementado | GET/PUT perfil, nombre, teléfono, referencia y coordenadas opcionales. |
 | RF-04 | Parcial | Pausa global y selección independiente por categoría de avisos internos (horarios, recojos, incidencias y canjes), persistidas y aplicadas por servidor. Historial previo conservado; tipos/proveedor push aún pendientes. |
@@ -58,7 +58,7 @@ Fuente: RF-01–40 y RNF-01–26 del informe original, más la estructura del cu
 | RNF-05 | Parcial | Reportes ciudadanos y estado sin datos recientes; probar fallos reales de hardware en piloto. |
 | RNF-06 | Pendiente | La API deduplica secuencias reenviadas, pero no hay firmware con cola persistente local. |
 | RNF-07 | Pendiente | Configurar respaldos/retención del host y verificar una restauración. |
-| RNF-08 | Parcial | Adaptador JWT firmado y SDK Supabase; falta prueba remota. Contraseñas quedan en Auth, nunca en EF/Flutter como texto persistido. |
+| RNF-08 | Parcial | JWT asimétrico real verificado en Render y acceso Flutter publicado; token demo rechazado. Contraseñas en Auth, sin persistencia en texto en EF/Flutter. Correo/recuperación y auditoría adicional pendientes. |
 | RNF-09 | Parcial | Claves IoT individuales con hash y comparación constante; producción exige HTTPS del host. Desarrollo usa HTTP local explícito. |
 | RNF-10 | Parcial | Roles y propiedad de recursos comprobados en API; falta aislamiento municipal/institucional. |
 | RNF-11 | Parcial | Permiso GPS solicitado, coordenadas opcionales, dirección privada y caché solo pública; faltan política de privacidad, consentimiento completo y revisión legal para operación. |
@@ -70,8 +70,8 @@ Fuente: RF-01–40 y RNF-01–26 del informe original, más la estructura del cu
 | RNF-17 | Por validar | Diseño adaptable, estados de carga/error/vacío, texto además de color y movimiento reducido; faltan sesiones de usabilidad y auditoría de accesibilidad. |
 | RNF-18 | Implementado | ASP.NET Core/EF Core 10, PostgreSQL 17/PostGIS 3.5, repositorios LINQ y UnitOfWork. |
 | RNF-19 | Implementado | Columnas calculadas geography(Point,4326), índices GiST y búsquedas espaciales reales. |
-| RNF-20 | Parcial | Compose de BD, Dockerfile API sin root y migraciones versionadas; imagen construida localmente. Falta despliegue público configurado. |
-| RNF-21 | Parcial | 47 pruebas backend y 24 Flutter; puntos, concurrencia, permisos, recordatorios, preferencias, migración de historial, sensores y canjes. No hay pruebas de depósitos inexistentes. |
+| RNF-20 | Parcial | API Docker sin root desplegada en Render Free, Supabase con siete migraciones/TLS/rol limitado y Flutter web en Pages. Falta restauración, carga, observabilidad operativa y continuidad; el plan gratuito duerme. |
+| RNF-21 | Parcial | 53 pruebas backend y 24 Flutter; puntos, concurrencia, permisos, recordatorios, preferencias, migración de historial, hosting, sensores y canjes. Smoke remoto API y web aprobado; pruebas físicas y de requisitos pendientes no se sustituyen con ello. |
 | RNF-22 | Pendiente | Lecturas persistidas sin particionado/purga; definir retención antes de crecimiento de piloto. |
 | RNF-23 | Parcial | Modelo de distritos y consultas por datos; altas sin UI completa. Instituciones aún no modeladas. |
 | RNF-24 | Pendiente físico | Autonomía de batería no medida. |

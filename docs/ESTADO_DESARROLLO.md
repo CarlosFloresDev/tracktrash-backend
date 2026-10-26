@@ -1,6 +1,6 @@
 # Estado de TrackTrash · 24/10/2026 · incremento 0.2
 
-Repositorios privados separados bajo CarlosFloresDev:
+Repositorios públicos separados bajo CarlosFloresDev (visibilidad autorizada el 25/10/2026):
 
 - [Backend](https://github.com/CarlosFloresDev/tracktrash-backend), C# / ASP.NET Core 10: Domain, Application, Infrastructure y Api.
 - [Mobile](https://github.com/CarlosFloresDev/tracktrash-mobile), Flutter para Android/iOS/web con navegación adaptable.
@@ -24,7 +24,7 @@ Flutter: ilustración original Tacho Vivo, iconos, animaciones con movimiento re
 
 La [matriz de los 40 RF y 26 RNF](MATRIZ_COBERTURA.md) detalla cada estado; [arquitectura real](ARQUITECTURA_IMPLEMENTADA.md). Los documentos originales y los planes iniciales se conservan como antecedente, no como prueba de implementación.
 
-Pendientes principales: despliegue de API/Flutter, correo/SMTP y validaci?n remota completa, recuperación completa de contraseña, Storage/fotos, push/outbox, depósitos validados, detalle multimaterial, instituciones/municipalidades, camiones/GPS/ETA y priorización, retención de lecturas, respaldos restaurados, carga, pruebas físicas y revisión de privacidad. No hay garantía de cero fallos ni cumplimiento total sin esas validaciones.
+Pendientes principales: correo/SMTP, recuperación completa de contraseña, Storage/fotos, push/outbox, depósitos validados, detalle multimaterial, instituciones/municipalidades, camiones/GPS/ETA y priorización, retención de lecturas, respaldos restaurados, carga, pruebas físicas y revisión de privacidad. No hay garantía de cero fallos ni cumplimiento total sin esas validaciones.
 
 Los datos precargados de aliados, horarios, ubicaciones y beneficios son sintéticos e identificados como demostración. El simulador HTTP no es firmware ESP32 y no demuestra autonomía o resistencia ambiental. iOS no se compiló en Windows; APK aún requiere instalación y prueba en dispositivo.
 
@@ -39,10 +39,10 @@ Leer ambos README/AGENTS.md, consultar git status y continuar en las ramas actua
 Skills aplicadas: aspnet-core, flutter-apply-architecture-best-practices, flutter-add-widget-test e imagegen. En este incremento se conectaron cuentas de Supabase, Cloudflare y Render; los DOCX/PDF originales siguen privados. Las instrucciones de continuación están en docs/CONTINUAR.md de la carpeta general.
 
 
-## Piloto remoto ? 25/10/2026
+## Piloto remoto · 25/10/2026
 
-Organizaci?n nueva Supabase TrackTrash y proyecto `owfjolparskdiazhfubr` creados. Siete migraciones aplicadas, TLS VerifyFull con CA p?blica y rol SQL limitado verificados; login real Supabase y perfil HTTP 200 probados desde API local en Production. Tres cuentas sint?ticas de prueba, secretos locales ignorados. Esto no completa la validaci?n remota de Flutter.
+Organización nueva Supabase TrackTrash y proyecto `owfjolparskdiazhfubr` creados. Siete migraciones aplicadas, TLS VerifyFull con CA pública y rol SQL limitado verificados. Tres cuentas sintéticas confirmadas para el piloto; secretos locales ignorados por Git.
 
-Cloudflare Pages `tracktrash` reservado, todav?a sin publicar. Render CLI autenticado, pero Render rechaza el repositorio privado y no encuentra su rama aunque GitHub la confirma. Falta revisar la instalaci?n GitHub de Render para CarlosFloresDev/tracktrash-backend. Todav?a sin servicio/API p?blica ni APK remoto. Documentaci?n detallada en `tracktrash-backend/docs/DESPLIEGUE_GRATUITO.md` (desde el backend, `docs/DESPLIEGUE_GRATUITO.md`).
+Web publicada: https://tracktrash.pages.dev. API Render Free: https://tracktrash-api.onrender.com/health/ready. El acceso al repositorio quedó resuelto al hacerlo público con permiso del propietario. Rama desplegada `feat/ecosistema-tracktrash`; main conserva el primer incremento y los PR #2 siguen abiertos. Detalles en `docs/DESPLIEGUE_GRATUITO.md` del backend.
 
-Backend: 53 pruebas locales aprobadas, Release sin advertencias e imagen Docker 0.2.1 construida. Flutter: analyze y 24 pruebas aprobadas; firma propia generada y configuraci?n release preparada, sin distribuir una compilaci?n con servidor inexistente. Free duerme en Render; no garantiza puntualidad de recordatorios internos. Hardware, push y otras brechas de la matriz siguen pendientes.
+Validación remota: JWT real para los tres roles; anónimo y token demo 401, vecino accediendo a indicadores admin 403, admin 200. Recojo sintético creado, consultado y cancelado; CORS y Location HTTPS correctos. Flutter publicado probado en Edge headless: login real, perfil, mapa y cierre, sin excepciones de navegador ni controles demo. Backend: 53 pruebas locales aprobadas, Release sin advertencias e imagen Docker 0.2.1 construida. Flutter: analyze y 24 pruebas aprobadas; firma propia generada. Instalación física y hardware siguen pendientes. Render Free duerme y no garantiza puntualidad de recordatorios internos.
