@@ -25,6 +25,8 @@ public sealed record DispositivoRegistradoDto(Guid Id, Guid ContenedorId, string
 public sealed record LecturaRequest(long Secuencia, double[] DistanciasCm, int Bateria, DateTimeOffset MedidaEn);
 public sealed record LecturaResultadoDto(bool Duplicada, int? Porcentaje, string Estado);
 public sealed record HistoricoDto(string Accion, DateTimeOffset CreadoEn);
+public sealed record ReportarNivelRequest(int Porcentaje);
+public sealed record MovimientoDto(Guid Id, int Puntos, string Motivo, DateTimeOffset CreadoEn);
 
 public static class MapeoEcosistema
 {

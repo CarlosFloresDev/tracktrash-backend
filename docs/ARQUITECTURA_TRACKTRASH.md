@@ -11,14 +11,14 @@ La imagen define Domain, Applications, Infrastructure y API. Usaremos `Applicati
 | Controllers | En Api, como muestra la imagen; el resumen los sitúa en Infrastructure y es contradictorio |
 | Entidades y contratos de persistencia | En Domain, siguiendo el resumen y la imagen |
 | Unit of Work | Interfaz IUnitOfWork en Domain; implementación UnitOfWork en Infrastructure |
-| Casos de uso | En Application, una clase por acción y un método público ExecuteAsync, sin interfaz por caso de uso |
+| Casos de uso | En Application, con MediatR: un Command o Query por acción (record + Handler en el mismo archivo), en carpetas Commands/ y Queries/ |
 | DTOs de los casos de uso | En Application, como indica la imagen |
 | Servicios externos | Interfaz en Application cuando la necesita un caso de uso; implementación en Infrastructure |
 | Reglas del dominio | Implementaciones en Domain, además de entidades y contratos |
 | Middleware y DI | Implementaciones y registros centralizados en Infrastructure; activación y orden del pipeline en Program.cs |
 | Cuarta capa | Proyecto ejecutable ASP.NET Core Web API con Controllers y Program.cs |
 
-La frase «todo el código concreto va en infrastructure» no se aplica literalmente: ConfirmarEntregaUseCase es código concreto de Application y Entrega.Confirmar es código concreto de Domain. Infrastructure implementa los detalles técnicos y los contratos de acceso a recursos externos.
+La frase «todo el código concreto va en infrastructure» no se aplica literalmente: ConfirmarEntregaCommandHandler es código concreto de Application y Entrega.Confirmar es código concreto de Domain. Infrastructure implementa los detalles técnicos y los contratos de acceso a recursos externos.
 
 Clean Architecture y arquitectura hexagonal comparten la inversión de dependencias, pero no son nombres de una plantilla universal de tres o cuatro proyectos. La ubicación de interfaces puede variar entre diseños. En este proyecto se mantiene la convención de repositorios en Domain requerida por el curso.
 
@@ -82,17 +82,24 @@ tracktrash-backend/
     TrackTrash.Application/
       UseCases/
         SolicitudesRecojo/
-          CrearSolicitudRecojoUseCase.cs
-          AceptarSolicitudRecojoUseCase.cs
-          CancelarSolicitudRecojoUseCase.cs
-          ObtenerSolicitudRecojoPorIdUseCase.cs
+          Commands/
+            CrearSolicitudRecojoCommand.cs
+            AceptarSolicitudRecojoCommand.cs
+            CancelarSolicitudCommand.cs
+          Queries/
+            ObtenerSolicitudRecojoQuery.cs
+            ListarSolicitudesRecojoQuery.cs
         Entregas/
-          ConfirmarEntregaUseCase.cs
+          Commands/
+            ConfirmarEntregaCommand.cs
         Contenedores/
-          ObtenerContenedoresCercanosUseCase.cs
-          RegistrarLecturaContenedorUseCase.cs
+          Commands/
+            RegistrarLecturaCommand.cs
+          Queries/
+            ConsultarMapaQuery.cs
         Incidencias/
-          CrearIncidenciaUseCase.cs
+          Commands/
+            CrearIncidenciaCommand.cs
       DTOs/
         SolicitudesRecojo/
         Entregas/
@@ -151,7 +158,7 @@ tracktrash-backend/
     TrackTrash.Api.IntegrationTests/
 ```
 
-Es una estructura objetivo: el incremento inicial implementa el subconjunto de solicitudes, entregas y puntos. Se añadirán componentes cuando su funcionalidad lo necesite. Los nombres de acciones y entidades se mantienen en español, con PascalCase y sufijo UseCase: CrearSolicitudRecojoUseCase, no una mezcla de AddSolicitud y RegistrarPickup.
+Es una estructura objetivo: el incremento inicial implementa el subconjunto de solicitudes, entregas y puntos. Se añadirán componentes cuando su funcionalidad lo necesite. Los nombres de acciones y entidades se mantienen en español, con PascalCase y sufijo Command o Query: CrearSolicitudRecojoCommand, no una mezcla de AddSolicitud y RegistrarPickup.
 
 Flutter conserva su propia organización en el repositorio `tracktrash-mobile`; no importa ensamblados C#. Se comunica mediante el contrato HTTP de la API.
 
@@ -167,7 +174,7 @@ IUnitOfWork expresa la operación de persistir cambios coordinados sin exponer t
 
 Orquesta el caso de uso: obtiene al actor, verifica su permiso sobre la entrega, carga los datos, invoca las reglas, registra los movimientos y persiste el resultado. No reproduce reglas ya garantizadas por las entidades.
 
-Cada caso de uso recibe por constructor solo las dependencias necesarias y expone ExecuteAsync, con DTO de entrada cuando corresponda y CancellationToken. Se registra como clase concreta; no requiere IConfirmarEntregaUseCase ni un mediador para funcionar.
+Cada caso de uso se implementa con MediatR (CQRS): las operaciones que modifican estado van en `Commands/` y las de lectura en `Queries/`. Cada archivo contiene un `public sealed record` que implementa `IRequest<T>` y su `internal sealed class ...Handler` que implementa `IRequestHandler`, recibe por constructor primario solo las dependencias necesarias y expone `Handle(request, cancellationToken)`. Los `*Request` de `DTOs/` siguen siendo el contrato HTTP; el controlador los traduce al command con los parámetros de ruta y lo envía con `ISender`. Los handlers se registran por escaneo del ensamblado con `AddMediatR`.
 
 Los DTOs de entrada/salida pertenecen aquí. Los contratos específicos del transporte HTTP, si aparecen, pertenecen a Api; los formatos propios de Supabase o Firebase pertenecen a Infrastructure. No se añaden DTOs HTTP a Domain.
 
@@ -187,7 +194,7 @@ El registro centralizado puede registrar también las clases de Application porq
 
 1. Flutter llama a `POST /api/v1/entregas/{id}/confirmacion`, enviando el código de entrega y una clave de idempotencia.
 2. La autenticación valida el token; el controlador recibe la solicitud.
-3. ConfirmarEntregaUseCase comprueba el actor y sus permisos sobre esa entrega, el código y el estado actual. El actor se obtiene de la identidad validada, no de un usuario_id confiado del cuerpo.
+3. ConfirmarEntregaCommandHandler comprueba el actor y sus permisos sobre esa entrega, el código y el estado actual. El actor se obtiene de la identidad validada, no de un usuario_id confiado del cuerpo.
 4. Entrega.Confirmar aplica las reglas de transición; PoliticaPuntos calcula la recompensa.
 5. Los repositorios preparan el cambio de estado, un MovimientoPuntos y un evento pendiente de notificación.
 6. UnitOfWork persiste los cambios de BD de forma atómica. Restricciones únicas e implementación de concurrencia evitan la doble confirmación y duplicación de puntos; UnitOfWork por sí solo no evita esas carreras.

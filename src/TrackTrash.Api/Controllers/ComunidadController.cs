@@ -1,19 +1,38 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrackTrash.Application.DTOs.Ecosistema;
-using TrackTrash.Application.UseCases.Notificaciones;
-using TrackTrash.Application.UseCases.Recompensas;
-using TrackTrash.Application.UseCases.Operacion;
+using TrackTrash.Application.UseCases.Notificaciones.Commands;
+using TrackTrash.Application.UseCases.Notificaciones.Queries;
+using TrackTrash.Application.UseCases.Operacion.Queries;
+using TrackTrash.Application.UseCases.Recompensas.Commands;
+using TrackTrash.Application.UseCases.Recompensas.Queries;
 namespace TrackTrash.Api.Controllers;
 
 [ApiController, Authorize, Route("api/v1")]
-public sealed class ComunidadController : ControllerBase
+public sealed class ComunidadController(ISender sender) : ControllerBase
 {
-    [HttpGet("notificaciones")] public async Task<IActionResult> Avisos([FromServices] ListarNotificacionesUseCase c, CancellationToken ct) => Ok(await c.ExecuteAsync(ct));
-    [HttpPost("notificaciones/{id:guid}/lectura")] public async Task<IActionResult> Leer(Guid id, [FromServices] LeerNotificacionUseCase c, CancellationToken ct) { await c.ExecuteAsync(id, ct); return NoContent(); }
-    [HttpGet("beneficios")] public async Task<IActionResult> Beneficios([FromServices] ListarBeneficiosUseCase c, CancellationToken ct) => Ok(await c.ExecuteAsync(ct));
-    [HttpPost("beneficios"), Authorize(Roles = "admin")] public async Task<IActionResult> Crear(CrearBeneficioRequest r, [FromServices] CrearBeneficioUseCase c, CancellationToken ct) => Ok(new { id = await c.ExecuteAsync(r, ct) });
-    [HttpGet("canjes")] public async Task<IActionResult> Canjes([FromServices] ListarCanjesUseCase c, CancellationToken ct) => Ok(await c.ExecuteAsync(ct));
-    [HttpPost("canjes"), Authorize(Roles = "vecino")] public async Task<IActionResult> Canjear(CanjearRequest r, [FromServices] CanjearBeneficioUseCase c, CancellationToken ct) => Ok(await c.ExecuteAsync(r, ct));
-    [HttpGet("operacion/indicadores"), Authorize(Roles = "admin")] public async Task<IActionResult> Indicadores([FromServices] ObtenerIndicadoresUseCase c, CancellationToken ct) => Ok(await c.ExecuteAsync(ct));
+    [HttpGet("notificaciones")]
+    public async Task<IActionResult> Avisos(CancellationToken ct) => Ok(await sender.Send(new ListarNotificacionesQuery(), ct));
+
+    [HttpPost("notificaciones/{id:guid}/lectura")]
+    public async Task<IActionResult> Leer(Guid id, CancellationToken ct)
+    { await sender.Send(new LeerNotificacionCommand { NotificacionId = id }, ct); return NoContent(); }
+
+    [HttpGet("beneficios")]
+    public async Task<IActionResult> Beneficios(CancellationToken ct) => Ok(await sender.Send(new ListarBeneficiosQuery(), ct));
+
+    [HttpPost("beneficios"), Authorize(Roles = "admin")]
+    public async Task<IActionResult> Crear(CrearBeneficioRequest r, CancellationToken ct) =>
+        Ok(new { id = await sender.Send(new CrearBeneficioCommand { Nombre = r.Nombre, Descripcion = r.Descripcion, CostoPuntos = r.CostoPuntos, Stock = r.Stock }, ct) });
+
+    [HttpGet("canjes")]
+    public async Task<IActionResult> Canjes(CancellationToken ct) => Ok(await sender.Send(new ListarCanjesQuery(), ct));
+
+    [HttpPost("canjes"), Authorize(Roles = "vecino")]
+    public async Task<IActionResult> Canjear(CanjearRequest r, CancellationToken ct) =>
+        Ok(await sender.Send(new CanjearBeneficioCommand { BeneficioId = r.BeneficioId, Clave = r.Clave }, ct));
+
+    [HttpGet("operacion/indicadores"), Authorize(Roles = "admin")]
+    public async Task<IActionResult> Indicadores(CancellationToken ct) => Ok(await sender.Send(new ObtenerIndicadoresQuery(), ct));
 }

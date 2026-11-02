@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TrackTrash.Application.DTOs.Ecosistema;
 using TrackTrash.Application.DTOs.SolicitudesRecojo;
 using TrackTrash.Application.Ports.Services;
-using TrackTrash.Application.UseCases.Rutas;
+using TrackTrash.Application.UseCases.Rutas.Commands;
 using TrackTrash.Domain.Entities;
 using TrackTrash.Domain.Ports.Persistence;
 using TrackTrash.Domain.Ports.Repositories;
@@ -133,10 +133,10 @@ public sealed partial class ApiFlowTests
         perfil.ActualizarPreferenciasAvisos(false, true, true, true);
         foreach (var id in usuarios) db.Add(SuscripcionRuta.Crear(id, ruta, 20, ahora.AddHours(-1)));
         await db.SaveChangesAsync();
-        var worker = new ProcesarRecordatoriosUseCase(scope.ServiceProvider.GetRequiredService<IRutaRepository>(),
+        var worker = new ProcesarRecordatoriosCommandHandler(scope.ServiceProvider.GetRequiredService<IRutaRepository>(),
             scope.ServiceProvider.GetRequiredService<INotificadorUsuarioService>(), scope.ServiceProvider.GetRequiredService<IUnitOfWork>(), new RelojAvisos(ahora));
-        await worker.ExecuteAsync(default);
-        await worker.ExecuteAsync(default);
+        await worker.Handle(new ProcesarRecordatoriosCommand(), default);
+        await worker.Handle(new ProcesarRecordatoriosCommand(), default);
         var aviso = Assert.Single(await db.Notificaciones.Where(n => n.Tipo == TipoAviso.Horarios).ToListAsync());
         Assert.Equal(usuarios[1], aviso.UsuarioId);
         Assert.All(await db.Set<SuscripcionRuta>().ToListAsync(), s => Assert.True(s.ProximoAviso > ahora));

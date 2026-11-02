@@ -100,7 +100,7 @@ Piloto remoto: [recursos creados, configuración, evidencia y pendientes](docs/D
 | Proyecto | Responsabilidad |
 |---|---|
 | Domain | Entidades, reglas, repositorios e IUnitOfWork; sin EF/ASP.NET |
-| Application | DTOs, servicios abstractos y casos de uso concretos con ExecuteAsync |
+| Application | DTOs, servicios abstractos y casos de uso CQRS con MediatR (Commands y Queries) |
 | Infrastructure | EF/LINQ, PostgreSQL/PostGIS, adapters, identidad, middleware, worker y DI |
 | Api | Controllers y composición del host |
 

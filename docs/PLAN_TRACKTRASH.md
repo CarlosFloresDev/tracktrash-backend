@@ -114,7 +114,7 @@ La estructura acordada para esta propuesta sigue la imagen del curso. Se detalla
 | TrackTrash.Infrastructure | DbContext, configuraciones EF, repositorios, UnitOfWork, adapters de servicios, middleware y registro de dependencias |
 | TrackTrash.Api | Controllers, Program.cs y configuración del host Web API |
 
-Referencias de compilación: Application → Domain; Infrastructure → Application y Domain; Api → Application e Infrastructure para componer dependencias. Domain no referencia las demás capas. Los controladores llaman a casos de uso y no consultan DbContext directamente. Un caso de uso expone ExecuteAsync y se nombra en español de forma consistente, por ejemplo ConfirmarEntregaUseCase.
+Referencias de compilación: Application → Domain; Infrastructure → Application y Domain; Api → Application e Infrastructure para componer dependencias. Domain no referencia las demás capas. Los controladores envían commands y queries mediante MediatR (`ISender`) y no consultan DbContext directamente. Cada caso de uso se nombra en español de forma consistente, por ejemplo ConfirmarEntregaCommand u ObtenerImpactoQuery.
 
 Esta distribución es la convención seleccionada para el curso, no una definición universal del número de capas de Clean Architecture. Las reglas concretas de dominio y los casos de uso se implementan en sus propias capas; Infrastructure concentra implementaciones técnicas. La regla esencial es que las dependencias apunten hacia el núcleo. [Referencia de Microsoft](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures).
 

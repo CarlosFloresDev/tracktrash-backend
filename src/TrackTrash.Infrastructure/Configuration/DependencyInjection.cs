@@ -9,9 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using TrackTrash.Application.Ports.Services;
-using TrackTrash.Application.UseCases.Entregas;
-using TrackTrash.Application.UseCases.Recompensas;
-using TrackTrash.Application.UseCases.SolicitudesRecojo;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands;
 using TrackTrash.Domain.Ports.Persistence;
 using TrackTrash.Domain.Ports.Repositories;
 using TrackTrash.Infrastructure.Adapters.Identity;
@@ -49,14 +47,7 @@ public static class DependencyInjection
         services.AddSingleton<ICodigoEntregaService, CodigoEntregaService>();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<ISeguridadDispositivoService, SeguridadDispositivoService>();
-        foreach (var tipo in typeof(CrearSolicitudRecojoUseCase).Assembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("UseCase", StringComparison.Ordinal)))
-            services.AddScoped(tipo);
-        services.AddScoped<CrearSolicitudRecojoUseCase>();
-        services.AddScoped<ListarSolicitudesRecojoUseCase>();
-        services.AddScoped<ObtenerSolicitudRecojoUseCase>();
-        services.AddScoped<AceptarSolicitudRecojoUseCase>();
-        services.AddScoped<ConfirmarEntregaUseCase>();
-        services.AddScoped<ObtenerImpactoUseCase>();
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CrearSolicitudRecojoCommand).Assembly));
 
         if (config.GetValue<bool>("Authentication:Demo"))
         {

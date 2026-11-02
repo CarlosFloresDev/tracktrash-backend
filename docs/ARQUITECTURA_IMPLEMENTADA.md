@@ -15,7 +15,7 @@ flowchart LR
   IOT[Simulador o dispositivo HTTP] -->|Clave individual| API
 ```
 
-Domain no importa EF ni ASP.NET. Application usa DTOs/contratos de servicios y clases concretas por operación con ExecuteAsync. Infrastructure implementa repositorios LINQ, UnitOfWork, contexto EF, identidad, middleware y worker. Api conserva Controllers/Program como cuarta capa del curso. Prueba automática comprueba referencias entre proyectos.
+Domain no importa EF ni ASP.NET. Application usa DTOs/contratos de servicios y con MediatR (CQRS): un Command o Query por operación en `UseCases/<Módulo>/Commands|Queries`, con su Handler en el mismo archivo; los controladores envían cada petición con `ISender`. Infrastructure implementa repositorios LINQ, UnitOfWork, contexto EF, identidad, middleware y worker. Api conserva Controllers/Program como cuarta capa del curso. Prueba automática comprueba referencias entre proyectos.
 
 ## Modelo persistido
 
