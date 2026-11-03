@@ -3,7 +3,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using TrackTrash.Infrastructure.Configuration;
-using TrackTrash.Infrastructure.Middlewares;
+using TrackTrash.Api.Middlewares;
 using TrackTrash.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using TrackTrash.Application.Exceptions;
 using TrackTrash.Domain.Exceptions;
 
-namespace TrackTrash.Infrastructure.Middlewares;
+namespace TrackTrash.Api.Middlewares;
 
 public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
