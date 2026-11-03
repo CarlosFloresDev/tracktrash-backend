@@ -9,9 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using TrackTrash.Application.Ports.Services;
-using TrackTrash.Application.UseCases.Entregas;
-using TrackTrash.Application.UseCases.Recompensas;
-using TrackTrash.Application.UseCases.SolicitudesRecojo;
 using TrackTrash.Domain.Ports.Persistence;
 using TrackTrash.Domain.Ports.Repositories;
 using TrackTrash.Infrastructure.Adapters.Identity;
@@ -36,12 +33,6 @@ public static class DependencyInjection
         services.AddScoped<IUsuarioActualService, UsuarioActualService>();
         services.AddSingleton<ICodigoEntregaService, CodigoEntregaService>();
         services.AddSingleton(TimeProvider.System);
-        services.AddScoped<CrearSolicitudRecojoUseCase>();
-        services.AddScoped<ListarSolicitudesRecojoUseCase>();
-        services.AddScoped<ObtenerSolicitudRecojoUseCase>();
-        services.AddScoped<AceptarSolicitudRecojoUseCase>();
-        services.AddScoped<ConfirmarEntregaUseCase>();
-        services.AddScoped<ObtenerImpactoUseCase>();
 
         if (config.GetValue<bool>("Authentication:Demo"))
         {

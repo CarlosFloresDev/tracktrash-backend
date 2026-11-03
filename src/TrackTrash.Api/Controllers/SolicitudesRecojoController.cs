@@ -1,36 +1,46 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TrackTrash.Application.DTOs.SolicitudesRecojo;
-using TrackTrash.Application.UseCases.Entregas;
-using TrackTrash.Application.UseCases.SolicitudesRecojo;
+using TrackTrash.Api.Contracts;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.AceptarSolicitudRecojo;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.ConfirmarEntrega;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.CrearSolicitudRecojo;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Common;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Queries.ListarSolicitudesRecojo;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Queries.ObtenerSolicitudRecojo;
 
 namespace TrackTrash.Api.Controllers;
 
 [ApiController, Authorize, Route("api/v1/solicitudes")]
-public sealed class SolicitudesRecojoController : ControllerBase
+public sealed class SolicitudesRecojoController(ISender sender) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<SolicitudDto>>> Listar(
-        [FromServices] ListarSolicitudesRecojoUseCase useCase, CancellationToken ct, [FromQuery] int pagina = 1) =>
-        Ok(await useCase.ExecuteAsync(pagina, ct));
+    public async Task<ActionResult<IReadOnlyList<SolicitudDto>>> Listar(CancellationToken ct, [FromQuery] int pagina = 1) =>
+        Ok(await sender.Send(new ListarSolicitudesRecojoQuery { Pagina = pagina }, ct));
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<SolicitudDto>> Obtener(Guid id,
-        [FromServices] ObtenerSolicitudRecojoUseCase useCase, CancellationToken ct) => Ok(await useCase.ExecuteAsync(id, ct));
+    public async Task<ActionResult<SolicitudDto>> Obtener(Guid id, CancellationToken ct) =>
+        Ok(await sender.Send(new ObtenerSolicitudRecojoQuery { Id = id }, ct));
 
     [HttpPost, Authorize(Roles = "vecino")]
-    public async Task<ActionResult<SolicitudDto>> Crear(CrearSolicitudRequest request,
-        [FromServices] CrearSolicitudRecojoUseCase useCase, CancellationToken ct)
+    public async Task<ActionResult<SolicitudDto>> Crear(CrearSolicitudRequest request, CancellationToken ct)
     {
-        var result = await useCase.ExecuteAsync(request, ct);
+        var result = await sender.Send(new CrearSolicitudRecojoCommand
+        {
+            ClaveSolicitud = request.ClaveSolicitud,
+            Material = request.Material,
+            CantidadEstimadaKg = request.CantidadEstimadaKg,
+            Direccion = request.Direccion,
+            ProgramadaPara = request.ProgramadaPara
+        }, ct);
         return CreatedAtAction(nameof(Obtener), new { id = result.Id }, result);
     }
 
     [HttpPost("{id:guid}/aceptacion"), Authorize(Roles = "reciclador")]
-    public async Task<ActionResult<SolicitudDto>> Aceptar(Guid id,
-        [FromServices] AceptarSolicitudRecojoUseCase useCase, CancellationToken ct) => Ok(await useCase.ExecuteAsync(id, ct));
+    public async Task<ActionResult<SolicitudDto>> Aceptar(Guid id, CancellationToken ct) =>
+        Ok(await sender.Send(new AceptarSolicitudRecojoCommand { Id = id }, ct));
 
     [HttpPost("{id:guid}/confirmacion"), Authorize(Roles = "reciclador")]
-    public async Task<ActionResult<SolicitudDto>> Confirmar(Guid id, ConfirmarEntregaRequest request,
-        [FromServices] ConfirmarEntregaUseCase useCase, CancellationToken ct) => Ok(await useCase.ExecuteAsync(id, request, ct));
+    public async Task<ActionResult<SolicitudDto>> Confirmar(Guid id, ConfirmarEntregaRequest request, CancellationToken ct) =>
+        Ok(await sender.Send(new ConfirmarEntregaCommand { Id = id, Codigo = request.Codigo }, ct));
 }
