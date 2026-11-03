@@ -17,6 +17,7 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
             if (context.Response.HasStarted) throw;
             var status = ex switch
             {
+                ValidacionException => 400,
                 AccesoDenegadoException => 403,
                 RecursoNoEncontradoException => 404,
                 ConflictoPersistenciaException => 409,
@@ -25,6 +26,15 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
             };
             if (status == 500) logger.LogError(ex, "Fallo no controlado. TraceId: {TraceId}", context.TraceIdentifier);
             context.Response.StatusCode = status;
+            if (ex is ValidacionException validacion)
+            {
+                await context.Response.WriteAsJsonAsync(new ValidationProblemDetails(validacion.Errores)
+                {
+                    Status = status, Title = validacion.Message,
+                    Extensions = { ["traceId"] = context.TraceIdentifier }
+                }, options: null, contentType: "application/problem+json", cancellationToken: context.RequestAborted);
+                return;
+            }
             await context.Response.WriteAsJsonAsync(new ProblemDetails
             {
                 Status = status, Title = status == 500 ? "No pudimos completar la operación." : ex.Message,
