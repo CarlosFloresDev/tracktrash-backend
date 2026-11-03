@@ -4,7 +4,8 @@ using TrackTrash.Domain.Ports.Repositories;
 
 namespace TrackTrash.Infrastructure.Persistence.Repositories;
 
-public sealed class SolicitudRecojoRepository(TrackTrashDbContext db) : ISolicitudRecojoRepository
+public sealed class SolicitudRecojoRepository(TrackTrashDbContext db)
+    : Repository<SolicitudRecojo>(db), ISolicitudRecojoRepository
 {
     public Task<SolicitudRecojo?> ObtenerAsync(Guid id, CancellationToken ct) =>
         db.Solicitudes.SingleOrDefaultAsync(x => x.Id == id, ct);
@@ -19,6 +20,4 @@ public sealed class SolicitudRecojoRepository(TrackTrashDbContext db) : ISolicit
                 : x.VecinoId == actorId)
             .OrderByDescending(x => x.CreadaEn).ThenBy(x => x.Id)
             .Skip((pagina - 1) * 50).Take(50).ToListAsync(ct);
-
-    public void Agregar(SolicitudRecojo solicitud) => db.Solicitudes.Add(solicitud);
 }
