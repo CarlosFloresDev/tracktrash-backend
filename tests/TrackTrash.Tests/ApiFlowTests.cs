@@ -18,6 +18,7 @@ using TrackTrash.Infrastructure.Persistence;
 
 namespace TrackTrash.Tests;
 
+[Trait("Categoria", "Integracion")]
 public sealed class ApiFlowTests : IAsyncLifetime
 {
     private WebApplicationFactory<Program> _factory = null!;
