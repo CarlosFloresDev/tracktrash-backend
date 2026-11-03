@@ -1,16 +1,19 @@
-using TrackTrash.Application.DTOs.SolicitudesRecojo;
+using MediatR;
 using TrackTrash.Application.Exceptions;
 using TrackTrash.Application.Ports.Services;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Common;
 using TrackTrash.Domain.Entities;
+using TrackTrash.Domain.Exceptions;
 using TrackTrash.Domain.Ports.Persistence;
 using TrackTrash.Domain.Ports.Repositories;
 
-namespace TrackTrash.Application.UseCases.SolicitudesRecojo;
+namespace TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.CrearSolicitudRecojo;
 
-public sealed class CrearSolicitudRecojoUseCase(ISolicitudRecojoRepository solicitudes,
+internal sealed class CrearSolicitudRecojoCommandHandler(ISolicitudRecojoRepository solicitudes,
     IUnitOfWork uow, IUsuarioActualService usuario, ICodigoEntregaService codigos, TimeProvider reloj)
+    : IRequestHandler<CrearSolicitudRecojoCommand, SolicitudDto>
 {
-    public async Task<SolicitudDto> ExecuteAsync(CrearSolicitudRequest request, CancellationToken ct)
+    public async Task<SolicitudDto> Handle(CrearSolicitudRecojoCommand request, CancellationToken ct)
     {
         if (usuario.EsReciclador) throw new AccesoDenegadoException();
         var existente = await solicitudes.ObtenerPorClaveAsync(usuario.Id, request.ClaveSolicitud, ct);
@@ -19,7 +22,7 @@ public sealed class CrearSolicitudRecojoUseCase(ISolicitudRecojoRepository solic
             if (existente.Material != request.Material || existente.CantidadEstimadaKg != request.CantidadEstimadaKg
                 || existente.Direccion != request.Direccion.Trim()
                 || existente.ProgramadaPara.UtcTicks / 10 != request.ProgramadaPara.UtcTicks / 10)
-                throw new Domain.Exceptions.ReglaNegocioException("Esta clave de solicitud ya se utilizó con otros datos.");
+                throw new ReglaNegocioException("Esta clave de solicitud ya se utilizó con otros datos.");
             return SolicitudDto.Desde(existente, usuario.Id);
         }
         var solicitud = SolicitudRecojo.Crear(usuario.Id, request.ClaveSolicitud, request.Material,

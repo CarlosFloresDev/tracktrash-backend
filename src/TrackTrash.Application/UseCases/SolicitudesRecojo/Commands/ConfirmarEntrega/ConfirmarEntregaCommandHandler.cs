@@ -1,19 +1,21 @@
-using TrackTrash.Application.DTOs.SolicitudesRecojo;
+using MediatR;
 using TrackTrash.Application.Exceptions;
 using TrackTrash.Application.Ports.Services;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Common;
 using TrackTrash.Domain.Entities;
 using TrackTrash.Domain.Ports.Persistence;
 using TrackTrash.Domain.Ports.Repositories;
 
-namespace TrackTrash.Application.UseCases.Entregas;
+namespace TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.ConfirmarEntrega;
 
-public sealed class ConfirmarEntregaUseCase(ISolicitudRecojoRepository solicitudes,
+internal sealed class ConfirmarEntregaCommandHandler(ISolicitudRecojoRepository solicitudes,
     IMovimientoPuntosRepository puntos, IUnitOfWork uow, IUsuarioActualService usuario, TimeProvider reloj)
+    : IRequestHandler<ConfirmarEntregaCommand, SolicitudDto>
 {
-    public async Task<SolicitudDto> ExecuteAsync(Guid id, ConfirmarEntregaRequest request, CancellationToken ct)
+    public async Task<SolicitudDto> Handle(ConfirmarEntregaCommand request, CancellationToken ct)
     {
         if (!usuario.EsReciclador) throw new AccesoDenegadoException();
-        var s = await solicitudes.ObtenerAsync(id, ct) ?? throw new RecursoNoEncontradoException();
+        var s = await solicitudes.ObtenerAsync(request.Id, ct) ?? throw new RecursoNoEncontradoException();
         if (s.RecicladorId != usuario.Id) throw new AccesoDenegadoException();
         var ahora = reloj.GetUtcNow();
         if (s.Confirmar(usuario.Id, request.Codigo, ahora))
