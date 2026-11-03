@@ -2,8 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using TrackTrash.Application.Exceptions;
 using TrackTrash.Domain.Ports.Persistence;
+using TrackTrash.Infrastructure.Persistence;
 
-namespace TrackTrash.Infrastructure.Persistence;
+namespace TrackTrash.Infrastructure.Adapters;
 
 public sealed class UnitOfWork(TrackTrashDbContext db) : IUnitOfWork
 {
