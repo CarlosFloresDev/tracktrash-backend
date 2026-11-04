@@ -9,7 +9,9 @@ public sealed class CatalogoRepository(TrackTrashDbContext db) : ICatalogoReposi
     public async Task<IReadOnlyList<AsociacionReciclaje>> AsociacionesAsync(CancellationToken ct) => await db.Asociaciones.AsNoTracking().Include(x => x.Materiales).OrderBy(x => x.Nombre).Take(200).ToListAsync(ct);
     public Task<AsociacionReciclaje?> AsociacionAsync(Guid id, CancellationToken ct) => db.Asociaciones.Include(x => x.Materiales).SingleOrDefaultAsync(x => x.Id == id, ct);
     public async Task<IReadOnlyList<PuntoAcopio>> PuntosAsync(CancellationToken ct) => await db.PuntosAcopio.AsNoTracking().OrderBy(p => p.Nombre).ThenBy(p => p.Id).Take(200).ToListAsync(ct);
+    public Task<PuntoAcopio?> PuntoAsync(Guid id, CancellationToken ct) => db.PuntosAcopio.SingleOrDefaultAsync(p => p.Id == id, ct);
     public void Agregar(AsociacionReciclaje a) => db.Asociaciones.Add(a);
+    public void Agregar(PuntoAcopio p) => db.PuntosAcopio.Add(p);
     public async Task<IReadOnlyList<AsociacionReciclaje>> CandidatosAsync(MaterialReciclable material, decimal kg, double lat, double lng, CancellationToken ct)
     {
         const double margen = 0.25; // Prefiltro aproximado; la distancia exacta se calcula después.
