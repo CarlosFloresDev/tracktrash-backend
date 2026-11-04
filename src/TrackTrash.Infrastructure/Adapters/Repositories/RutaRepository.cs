@@ -11,6 +11,7 @@ public sealed class RutaRepository(TrackTrashDbContext db) : IRutaRepository
     public async Task<IReadOnlyList<SuscripcionRuta>> SuscripcionesAsync(Guid usuario, CancellationToken ct) => await db.Set<SuscripcionRuta>().AsNoTracking().Where(s => s.UsuarioId == usuario).ToListAsync(ct);
     public async Task<IReadOnlyList<SuscripcionRuta>> PendientesAsync(DateTimeOffset ahora, CancellationToken ct) => await db.Set<SuscripcionRuta>().Where(s => s.ProximoAviso <= ahora).OrderBy(s => s.ProximoAviso).ThenBy(s => s.Id).Take(100).ToListAsync(ct);
     public Task<bool> ReporteRecienteAsync(Guid ruta, Guid usuario, DateTimeOffset desde, CancellationToken ct) => db.Set<ReportePasoCamion>().AnyAsync(r => r.RutaId == ruta && r.UsuarioId == usuario && r.ReportadoEn >= desde, ct);
+    public async Task<IReadOnlyList<ReportePasoCamion>> ReportesPasoAsync(Guid ruta, int maximo, CancellationToken ct) => await db.Set<ReportePasoCamion>().AsNoTracking().Where(r => r.RutaId == ruta).OrderByDescending(r => r.ReportadoEn).ThenBy(r => r.Id).Take(maximo).ToListAsync(ct);
     public void Agregar(SuscripcionRuta s) => db.Add(s);
     public void Agregar(ReportePasoCamion r) => db.Add(r);
     public void Quitar(SuscripcionRuta s) => db.Remove(s);

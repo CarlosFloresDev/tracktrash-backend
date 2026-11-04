@@ -10,6 +10,7 @@ public interface IRutaRepository
     Task<IReadOnlyList<SuscripcionRuta>> SuscripcionesAsync(Guid usuarioId, CancellationToken ct);
     Task<IReadOnlyList<SuscripcionRuta>> PendientesAsync(DateTimeOffset ahora, CancellationToken ct);
     Task<bool> ReporteRecienteAsync(Guid rutaId, Guid usuarioId, DateTimeOffset desde, CancellationToken ct);
+    Task<IReadOnlyList<ReportePasoCamion>> ReportesPasoAsync(Guid rutaId, int maximo, CancellationToken ct);
     void Agregar(SuscripcionRuta suscripcion);
     void Agregar(ReportePasoCamion reporte);
     void Quitar(SuscripcionRuta suscripcion);
