@@ -57,7 +57,33 @@ public sealed class ApiFlowTests : IAsyncLifetime
             });
         });
         using var scope = _factory.Services.CreateScope();
-        await scope.ServiceProvider.GetRequiredService<TrackTrashDbContext>().Database.MigrateAsync();
+        var db = scope.ServiceProvider.GetRequiredService<TrackTrashDbContext>();
+        await db.Database.MigrateAsync();
+
+        var distritoId = Guid.NewGuid();
+        var asociacionId = Guid.NewGuid();
+        var recicladorId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+
+        var distrito = Distrito.Crear(distritoId, "Distrito de prueba");
+        var asociacion = AsociacionReciclaje.Crear(
+            asociacionId,
+            distritoId,
+            "Asociación de prueba",
+            "Av. Pruebas 123",
+            -12.0464,
+            -77.0428,
+            1000m,
+            Enum.GetValues<MaterialReciclable>(),
+            demo: true);
+        asociacion.Verificar();
+
+        var perfilReciclador = PerfilUsuario.Crear(recicladorId);
+        perfilReciclador.VincularAsociacion(asociacionId);
+
+        db.Distritos.Add(distrito);
+        db.Asociaciones.Add(asociacion);
+        db.Perfiles.Add(perfilReciclador);
+        await db.SaveChangesAsync();
     }
 
     public async Task DisposeAsync()
