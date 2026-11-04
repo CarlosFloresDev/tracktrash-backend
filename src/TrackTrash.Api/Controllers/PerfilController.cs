@@ -11,7 +11,7 @@ public sealed class PerfilController(ISender sender) : ControllerBase
 {
     [HttpGet]
     public IActionResult Obtener([FromServices] IUsuarioActualService usuario) =>
-        Ok(new { id = usuario.Id, rol = usuario.EsAdministrador ? "administrador" : usuario.EsReciclador ? "reciclador" : "vecino" });
+        Ok(new { id = usuario.Id, rol = usuario.Rol.ComoClaim() });
 
     [HttpGet("impacto")]
     public async Task<IActionResult> Impacto(CancellationToken ct) =>

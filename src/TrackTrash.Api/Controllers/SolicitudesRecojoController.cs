@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TrackTrash.Application.DTOs.SolicitudesRecojo;
+using TrackTrash.Application.Ports.Services;
 using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.AceptarSolicitudRecojo;
 using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.ConfirmarEntrega;
 using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.CrearSolicitudRecojo;
@@ -21,7 +22,7 @@ public sealed class SolicitudesRecojoController(ISender sender) : ControllerBase
     public async Task<ActionResult<SolicitudDto>> Obtener(Guid id, CancellationToken ct) =>
         Ok(await sender.Send(new ObtenerSolicitudRecojoQuery { SolicitudId = id }, ct));
 
-    [HttpPost, Authorize(Roles = "vecino")]
+    [HttpPost, Authorize(Policy = PoliticasTrackTrash.SoloVecinos)]
     public async Task<ActionResult<SolicitudDto>> Crear(CrearSolicitudRequest request, CancellationToken ct)
     {
         var result = await sender.Send(new CrearSolicitudRecojoCommand
@@ -38,11 +39,11 @@ public sealed class SolicitudesRecojoController(ISender sender) : ControllerBase
         return CreatedAtAction(nameof(Obtener), new { id = result.Id }, result);
     }
 
-    [HttpPost("{id:guid}/aceptacion"), Authorize(Roles = "reciclador")]
+    [HttpPost("{id:guid}/aceptacion"), Authorize(Policy = PoliticasTrackTrash.SoloRecicladores)]
     public async Task<ActionResult<SolicitudDto>> Aceptar(Guid id, CancellationToken ct) =>
         Ok(await sender.Send(new AceptarSolicitudRecojoCommand { SolicitudId = id }, ct));
 
-    [HttpPost("{id:guid}/confirmacion"), Authorize(Roles = "reciclador")]
+    [HttpPost("{id:guid}/confirmacion"), Authorize(Policy = PoliticasTrackTrash.SoloRecicladores)]
     public async Task<ActionResult<SolicitudDto>> Confirmar(Guid id, ConfirmarEntregaRequest request, CancellationToken ct) =>
         Ok(await sender.Send(new ConfirmarEntregaCommand { SolicitudId = id, Codigo = request.Codigo }, ct));
 }
