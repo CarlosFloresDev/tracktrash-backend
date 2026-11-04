@@ -1,11 +1,17 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TrackTrash.Api.Contracts;
 using TrackTrash.Application.DTOs.SolicitudesRecojo;
 using TrackTrash.Application.Ports.Services;
 using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.AceptarSolicitudRecojo;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.AsignarSolicitud;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.CancelarSolicitud;
 using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.ConfirmarEntrega;
 using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.CrearSolicitudRecojo;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.IniciarViaje;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Commands.ReprogramarSolicitud;
+using TrackTrash.Application.UseCases.SolicitudesRecojo.Queries.ConsultarHistorial;
 using TrackTrash.Application.UseCases.SolicitudesRecojo.Queries.ListarSolicitudesRecojo;
 using TrackTrash.Application.UseCases.SolicitudesRecojo.Queries.ObtenerSolicitudRecojo;
 
@@ -46,4 +52,24 @@ public sealed class SolicitudesRecojoController(ISender sender) : ControllerBase
     [HttpPost("{id:guid}/confirmacion"), Authorize(Policy = PoliticasTrackTrash.SoloRecicladores)]
     public async Task<ActionResult<SolicitudDto>> Confirmar(Guid id, ConfirmarEntregaRequest request, CancellationToken ct) =>
         Ok(await sender.Send(new ConfirmarEntregaCommand { SolicitudId = id, Codigo = request.Codigo }, ct));
+
+    [HttpPost("{id:guid}/asignacion"), Authorize(Policy = PoliticasTrackTrash.SoloVecinos)]
+    public async Task<ActionResult<SolicitudDto>> Asignar(Guid id, CancellationToken ct) =>
+        Ok(await sender.Send(new AsignarSolicitudCommand { SolicitudId = id }, ct));
+
+    [HttpPost("{id:guid}/viaje"), Authorize(Policy = PoliticasTrackTrash.SoloRecicladores)]
+    public async Task<ActionResult<SolicitudDto>> IniciarViaje(Guid id, CancellationToken ct) =>
+        Ok(await sender.Send(new IniciarViajeCommand { SolicitudId = id }, ct));
+
+    [HttpPost("{id:guid}/cancelacion")]
+    public async Task<ActionResult<SolicitudDto>> Cancelar(Guid id, CancelarSolicitudRequest request, CancellationToken ct) =>
+        Ok(await sender.Send(new CancelarSolicitudCommand { SolicitudId = id, Motivo = request.Motivo }, ct));
+
+    [HttpPost("{id:guid}/reprogramacion"), Authorize(Policy = PoliticasTrackTrash.SoloVecinos)]
+    public async Task<ActionResult<SolicitudDto>> Reprogramar(Guid id, ReprogramarSolicitudRequest request, CancellationToken ct) =>
+        Ok(await sender.Send(new ReprogramarSolicitudCommand { SolicitudId = id, ProgramadaPara = request.ProgramadaPara }, ct));
+
+    [HttpGet("{id:guid}/historial")]
+    public async Task<ActionResult<IReadOnlyList<HistoricoDto>>> Historial(Guid id, CancellationToken ct) =>
+        Ok(await sender.Send(new ConsultarHistorialQuery { SolicitudId = id }, ct));
 }
