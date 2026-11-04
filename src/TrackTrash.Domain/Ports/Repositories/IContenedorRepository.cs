@@ -9,6 +9,8 @@ public interface IContenedorRepository
     Task<DispositivoIoT?> DispositivoAsync(Guid id, CancellationToken ct);
     Task<bool> LecturaExisteAsync(Guid dispositivoId, long secuencia, CancellationToken ct);
     Task<bool> ReporteRecienteAsync(Guid contenedorId, Guid usuarioId, DateTimeOffset desde, CancellationToken ct);
+    Task<IReadOnlyList<LecturaNivel>> LecturasAsync(Guid dispositivoId, int maximo, CancellationToken ct);
+    Task<IReadOnlyList<ReporteCiudadano>> ReportesAsync(Guid contenedorId, int maximo, CancellationToken ct);
     void Agregar(Contenedor contenedor);
     void Agregar(DispositivoIoT dispositivo);
     void Agregar(LecturaNivel lectura);
