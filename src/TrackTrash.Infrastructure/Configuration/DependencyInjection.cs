@@ -29,8 +29,17 @@ public static class DependencyInjection
             config.GetConnectionString("TrackTrash") ?? throw new InvalidOperationException(
                 "Configura ConnectionStrings:TrackTrash mediante user-secrets o variables de entorno."),
             npg => npg.MigrationsHistoryTable("__EFMigrationsHistory", "tracktrash")));
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<ISolicitudRecojoRepository, SolicitudRecojoRepository>();
         services.AddScoped<IMovimientoPuntosRepository, MovimientoPuntosRepository>();
+        services.AddScoped<IBeneficioRepository, BeneficioRepository>();
+        services.AddScoped<ICatalogoRepository, CatalogoRepository>();
+        services.AddScoped<IContenedorRepository, ContenedorRepository>();
+        services.AddScoped<IHistoricoRepository, HistoricoRepository>();
+        services.AddScoped<IIncidenciaRepository, IncidenciaRepository>();
+        services.AddScoped<INotificacionRepository, NotificacionRepository>();
+        services.AddScoped<IPerfilRepository, PerfilRepository>();
+        services.AddScoped<IRutaRepository, RutaRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddHttpContextAccessor();
         services.AddScoped<IUsuarioActualService, UsuarioActualService>();

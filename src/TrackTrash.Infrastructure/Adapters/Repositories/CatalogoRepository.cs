@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 using TrackTrash.Domain.Entities;
 using TrackTrash.Domain.Ports.Repositories;
 namespace TrackTrash.Infrastructure.Persistence.Repositories;
@@ -13,10 +12,13 @@ public sealed class CatalogoRepository(TrackTrashDbContext db) : ICatalogoReposi
     public void Agregar(AsociacionReciclaje a) => db.Asociaciones.Add(a);
     public async Task<IReadOnlyList<AsociacionReciclaje>> CandidatosAsync(MaterialReciclable material, decimal kg, double lat, double lng, CancellationToken ct)
     {
-        var punto = new Point(lng, lat) { SRID = 4326 };
-        return await db.Asociaciones.AsNoTracking().Include(x => x.Materiales)
+        const double margen = 0.25; // Prefiltro aproximado; la distancia exacta se calcula después.
+        var candidatas = await db.Asociaciones.AsNoTracking().Include(x => x.Materiales)
             .Where(x => x.Verificada && x.CapacidadKg - x.ReservadoKg >= kg && x.Materiales.Any(m => m.Material == material)
-                && EF.Property<Point>(x, "Ubicacion").IsWithinDistance(punto, 20000))
-            .OrderBy(x => EF.Property<Point>(x, "Ubicacion").Distance(punto)).Take(10).ToListAsync(ct);
+                && x.Latitud >= lat - margen && x.Latitud <= lat + margen
+                && x.Longitud >= lng - margen && x.Longitud <= lng + margen)
+            .Take(200).ToListAsync(ct);
+        return candidatas.Where(x => Ubicacion.DistanciaKm(lat, lng, x.Latitud, x.Longitud) <= 20)
+            .OrderBy(x => Ubicacion.DistanciaKm(lat, lng, x.Latitud, x.Longitud)).Take(10).ToList();
     }
 }

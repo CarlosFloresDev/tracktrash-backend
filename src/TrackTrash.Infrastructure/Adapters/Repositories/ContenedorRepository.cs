@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 using TrackTrash.Domain.Entities;
 using TrackTrash.Domain.Ports.Repositories;
 namespace TrackTrash.Infrastructure.Persistence.Repositories;
@@ -8,9 +7,15 @@ public sealed class ContenedorRepository(TrackTrashDbContext db) : IContenedorRe
 {
     public async Task<IReadOnlyList<Contenedor>> CercanosAsync(double lat, double lng, double km, CancellationToken ct)
     {
-        var p = new Point(lng, lat) { SRID = 4326 };
-        return await db.Contenedores.AsNoTracking().Where(x => EF.Property<Point>(x, "Ubicacion").IsWithinDistance(p, km * 1000))
-            .OrderBy(x => EF.Property<Point>(x, "Ubicacion").Distance(p)).Take(500).ToListAsync(ct);
+        var margenLat = km / 111d;
+        var coseno = Math.Max(0.01, Math.Abs(Math.Cos(lat * Math.PI / 180)));
+        var margenLng = km / (111d * coseno);
+        var candidatos = await db.Contenedores.AsNoTracking()
+            .Where(x => x.Latitud >= lat - margenLat && x.Latitud <= lat + margenLat
+                && x.Longitud >= lng - margenLng && x.Longitud <= lng + margenLng)
+            .Take(1000).ToListAsync(ct);
+        return candidatos.Where(x => Ubicacion.DistanciaKm(lat, lng, x.Latitud, x.Longitud) <= km)
+            .OrderBy(x => Ubicacion.DistanciaKm(lat, lng, x.Latitud, x.Longitud)).Take(500).ToList();
     }
     public Task<Contenedor?> ObtenerAsync(Guid id, CancellationToken ct) => db.Contenedores.SingleOrDefaultAsync(x => x.Id == id, ct);
     public Task<DispositivoIoT?> DispositivoAsync(Guid id, CancellationToken ct) => db.Dispositivos.SingleOrDefaultAsync(x => x.Id == id, ct);
