@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -9,14 +11,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using TrackTrash.Application.Ports.Services;
-using TrackTrash.Application.UseCases.Entregas;
-using TrackTrash.Application.UseCases.Recompensas;
-using TrackTrash.Application.UseCases.SolicitudesRecojo;
+using TrackTrash.Application.Ports.Queries;
+using TrackTrash.Application.Behaviors;
 using TrackTrash.Domain.Ports.Persistence;
 using TrackTrash.Domain.Ports.Repositories;
 using TrackTrash.Infrastructure.Adapters.Identity;
+using TrackTrash.Infrastructure.Adapters;
 using TrackTrash.Infrastructure.Persistence;
 using TrackTrash.Infrastructure.Persistence.Repositories;
+using TrackTrash.Infrastructure.Persistence.Queries;
 
 namespace TrackTrash.Infrastructure.Configuration;
 
@@ -41,16 +44,16 @@ public static class DependencyInjection
         services.AddScoped<IPerfilRepository, PerfilRepository>();
         services.AddScoped<IRutaRepository, RutaRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<INotificadorUsuarioService, NotificadorUsuarioService>();
+        services.AddSingleton<ISeguridadDispositivoService, SeguridadDispositivoService>();
+        services.AddScoped<IIndicadoresConsulta, IndicadoresConsulta>();
+        services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(ValidationBehavior<,>).Assembly));
+        services.AddValidatorsFromAssembly(typeof(ValidationBehavior<,>).Assembly, includeInternalTypes: true);
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddHttpContextAccessor();
         services.AddScoped<IUsuarioActualService, UsuarioActualService>();
         services.AddSingleton<ICodigoEntregaService, CodigoEntregaService>();
         services.AddSingleton(TimeProvider.System);
-        services.AddScoped<CrearSolicitudRecojoUseCase>();
-        services.AddScoped<ListarSolicitudesRecojoUseCase>();
-        services.AddScoped<ObtenerSolicitudRecojoUseCase>();
-        services.AddScoped<AceptarSolicitudRecojoUseCase>();
-        services.AddScoped<ConfirmarEntregaUseCase>();
-        services.AddScoped<ObtenerImpactoUseCase>();
 
         if (config.GetValue<bool>("Authentication:Demo"))
         {

@@ -4,4 +4,5 @@ public interface IUsuarioActualService
 {
     Guid Id { get; }
     bool EsReciclador { get; }
+    bool EsAdministrador { get; }
 }
