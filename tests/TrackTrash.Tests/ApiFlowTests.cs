@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
 using TrackTrash.Application.DTOs.SolicitudesRecojo;
+using TrackTrash.Application.DTOs.MovimientosPuntos;
 using TrackTrash.Application.Exceptions;
 using TrackTrash.Domain.Entities;
 using TrackTrash.Infrastructure.Persistence;

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using FluentValidation;
 using TrackTrash.Application.Exceptions;
 using TrackTrash.Domain.Exceptions;
 
@@ -18,6 +19,7 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
             var status = ex switch
             {
                 AccesoDenegadoException => 403,
+                ValidationException => 400,
                 RecursoNoEncontradoException => 404,
                 ConflictoPersistenciaException => 409,
                 ReglaNegocioException => 422,
