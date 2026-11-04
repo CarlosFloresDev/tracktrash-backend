@@ -41,6 +41,7 @@ public static class DependencyInjection
         services.AddScoped<INotificadorUsuarioService, NotificadorUsuarioService>();
         services.AddSingleton<ISeguridadDispositivoService, SeguridadDispositivoService>();
         services.AddScoped<IIndicadoresConsulta, IndicadoresConsulta>();
+        services.AddScoped<IAuditoriaConsulta, AuditoriaConsulta>();
         services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(ValidationBehavior<,>).Assembly));
         services.AddValidatorsFromAssembly(typeof(ValidationBehavior<,>).Assembly, includeInternalTypes: true);
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

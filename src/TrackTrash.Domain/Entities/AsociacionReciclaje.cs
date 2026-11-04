@@ -41,6 +41,19 @@ public sealed class AsociacionReciclaje
         return a;
     }
     public void Verificar() => Verificada = true;
+    public void AgregarMaterial(MaterialReciclable material)
+    {
+        if (!Enum.IsDefined(material)) throw new ReglaNegocioException("Selecciona un material válido.");
+        if (Materiales.Any(m => m.Material == material)) throw new ReglaNegocioException("La asociación ya acepta ese material.");
+        Materiales.Add(new MaterialAceptado(Id, material));
+    }
+    public void QuitarMaterial(MaterialReciclable material)
+    {
+        var actual = Materiales.FirstOrDefault(m => m.Material == material)
+            ?? throw new ReglaNegocioException("La asociación no acepta ese material.");
+        if (Materiales.Count == 1) throw new ReglaNegocioException("La asociación debe aceptar al menos un material.");
+        Materiales.Remove(actual);
+    }
     public void Reservar(decimal kg, MaterialReciclable material)
     {
         if (!Verificada || !Materiales.Any(m => m.Material == material) || kg > CapacidadKg - ReservadoKg) throw new ReglaNegocioException("La asociación no tiene capacidad o no recibe ese material.");

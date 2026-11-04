@@ -20,6 +20,10 @@ public sealed class ContenedorRepository(TrackTrashDbContext db) : IContenedorRe
     public Task<Contenedor?> ObtenerAsync(Guid id, CancellationToken ct) => db.Contenedores.SingleOrDefaultAsync(x => x.Id == id, ct);
     public Task<DispositivoIoT?> DispositivoAsync(Guid id, CancellationToken ct) => db.Dispositivos.SingleOrDefaultAsync(x => x.Id == id, ct);
     public Task<bool> LecturaExisteAsync(Guid id, long secuencia, CancellationToken ct) => db.Lecturas.AnyAsync(x => x.DispositivoId == id && x.Secuencia == secuencia, ct);
+    public async Task<IReadOnlyList<LecturaNivel>> LecturasAsync(Guid dispositivo, int maximo, CancellationToken ct) =>
+        await db.Lecturas.AsNoTracking().Where(l => l.DispositivoId == dispositivo).OrderByDescending(l => l.MedidaEn).ThenBy(l => l.Id).Take(maximo).ToListAsync(ct);
+    public async Task<IReadOnlyList<ReporteCiudadano>> ReportesAsync(Guid contenedor, int maximo, CancellationToken ct) =>
+        await db.ReportesCiudadanos.AsNoTracking().Where(r => r.ContenedorId == contenedor).OrderByDescending(r => r.CreadoEn).ThenBy(r => r.Id).Take(maximo).ToListAsync(ct);
     public void Agregar(Contenedor c) => db.Contenedores.Add(c);
     public void Agregar(DispositivoIoT d) => db.Dispositivos.Add(d);
     public void Agregar(LecturaNivel l) => db.Lecturas.Add(l);
